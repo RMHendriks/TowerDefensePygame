@@ -8,9 +8,10 @@ RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-# class for tower behaviour
+
 class Tower(Cell):
-    
+    """ Class for tower behaviour. Child of Cell. """
+
     def __init__(self, x, y, size, enemy_list: list[Enemy]) -> None:
         super().__init__(x, y, size)
 
@@ -23,34 +24,38 @@ class Tower(Cell):
         self.target: Optional[Enemy] = None
 
     def draw(self, window) -> None:
-        """Draws the tower to the screen"""
+        """ Draws the tower to the screen. """
         super().draw(window)
 
-        pygame.draw.circle(window, BLACK, self.get_center_coord(), self.width / 4)
+        pygame.draw.circle(window, BLACK, self.get_center_coord(),
+                           self.width / 4)
 
     def shoot_cooldown(self) -> bool:
-        """Checks if the tower is on cooldown and returns True or False"""
-        
-        if (pygame.time.get_ticks() - self.cooldown_timer > self.shooting_cooldown and 
-            self.select_target()) and isinstance(self.target, Enemy):
+        """ Checks if the tower is on cooldown and returns True or False. """
+
+        if ((pygame.time.get_ticks() - self.cooldown_timer >
+           self.shooting_cooldown and self.select_target())
+           and isinstance(self.target, Enemy)):
+
             if self.target.get_projected_damage() > 0:
                 self.cooldown_timer = pygame.time.get_ticks()
                 return True
-        
+
         return False
-    
+
     def distance_to_target(self, enemy: Enemy) -> float:
-        """Calculate distance to target"""
+        """ Calculate distance to target. """
 
         return abs((enemy.position - self.position).magnitude())
 
     def select_target(self) -> bool:
-        """Selects are target within range and returns True if an enemy"""
-        
-        # check if the target has been removed from the list and change target to None
+        """ Selects are target within range and returns True if an enemy. """
+
+        # check if the target has been removed from the list
+        # and change target to None
         if self.target not in self.enemy_list:
             self.target = None
-        
+
         # keep the same target if the target is still in range
         if self.target is not None:
             if self.distance_to_target(self.target) <= self.range:
@@ -65,13 +70,15 @@ class Tower(Cell):
                 target = enemy
 
         self.target = target
-        
-        return True if self.target is not None else False
-    
-    def spawn_projectile(self) -> Projectile:
-        """Spawn a projectile ontop of the tower"""
 
-        projectile = Projectile(self.get_center_coord(), self.size, self.target)
-        projectile.deal_projected_damage()
-        
+        return True if self.target is not None else False
+
+    def spawn_projectile(self) -> Projectile:
+        """ Spawn a projectile ontop of the tower. """
+
+        if isinstance(self.target, Enemy):
+            projectile = Projectile(self.get_center_coord(),
+                                    self.size, self.target)
+            projectile.deal_projected_damage()
+
         return projectile

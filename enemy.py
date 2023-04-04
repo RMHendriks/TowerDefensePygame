@@ -5,11 +5,11 @@ GREEN = (75, 150, 25)
 BLACK = (0, 0, 0)
 
 
-# class for enemy behaviour
 class Enemy():
-    
+    """ Class for enemy behaviour. """
+
     def __init__(self, road: list[Vector2], cell_size: int) -> None:
-        
+
         self.road = road
         self.position = Vector2(road[0].x - cell_size / 2, road[0].y)
         self.radius = cell_size // 3
@@ -35,9 +35,9 @@ class Enemy():
     def distance_to_waypoint(self) -> Vector2:
 
         return Vector2(self.target - self.position)
-    
+
     def set_to_next_waypoint(self) -> None:
-        
+
         self.waypoint += 1
 
         if self.waypoint < len(self.road):
@@ -48,32 +48,36 @@ class Enemy():
     def get_radius(self) -> float:
 
         return self.radius
-    
+
     def receive_damage(self, damage: int) -> None:
-        """subtracts the incoming damage from an attack"""
+        """ subtracts the incoming damage from an attack. """
 
         self.health -= damage
-        
+
     def receive_projected_damage(self, damage: int) -> None:
-        """Receive projected damage to projectiles from spawning"""
-        
+        """ Receive projected damage. Used to prevent extra projectiles
+        from spawning if projected_health < 0. """
+
         self.projected_health -= damage
-        
+
     def get_projected_damage(self) -> int:
-        
+        """ Return the projected health of the enemy. """
+
         return self.projected_health
 
     def check_if_dead(self):
+        """ Returns True if the target has been killed, False if not. """
 
         if self.health <= 0:
             return True
-        
+
         return False
 
     def move(self, game_speed: float) -> None:
+        """ Moves the enemy. """
 
         if self.moving:
-            
+
             # calculate distance toward waypoint
             self.distance = self.distance_to_waypoint()
 
@@ -87,27 +91,31 @@ class Enemy():
                 self.set_to_next_waypoint()
                 return
 
-            # print(f"1 Distance: {self.distance}, Cords: {self.position}, Speed: {speed}, Waypoint: {self.waypoint}")
+            # print(f"1 Distance: {self.distance}, Cords: {self.position},
+            #       Speed: {speed}, Waypoint: {self.waypoint}")
 
-            # places the object on the waypoint and saves the remainder 
+            # places the object on the waypoint and saves the remainder
             # if the speed is larger than the distance to the waypoint
-            if self.distance.x < speed and self.distance.x > 0 and self.distance.y == 0: 
+            if (self.distance.x < speed and self.distance.x > 0
+               and self.distance.y == 0):
                 speed = speed - self.distance.x
                 self.position = Vector2(self.target)
                 self.set_to_next_waypoint()
-            elif self.distance.y < speed and self.distance.y > 0 and self.distance.x == 0:
+            elif (self.distance.y < speed and self.distance.y > 0
+                  and self.distance.x == 0):
                 speed = speed - self.distance.y
                 self.position = Vector2(self.target)
                 self.set_to_next_waypoint()
 
-            # print(f"2 Distance: {self.distance}, Cords: {self.position}, Speed: {speed}, Waypoint: {self.waypoint}")
+            # print(f"2 Distance: {self.distance}, Cords: {self.position},
+            #       Speed: {speed}, Waypoint: {self.waypoint}")
 
             self.distance = self.distance_to_waypoint()
             speed = round(speed, 4)
 
             if self.position != self.target:
                 if self.distance.x > 0:
-                    self.position.x = self.position.x +speed
+                    self.position.x = self.position.x + speed
                 elif self.distance.y > 0:
                     self.position.y = self.position.y + speed
                 elif self.distance.y < 0:
@@ -115,4 +123,5 @@ class Enemy():
             else:
                 self.set_to_next_waypoint()
 
-            # print(f"3 Distance: {self.distance}, Cords: {self.position}, Speed: {speed}, Waypoint: {self.waypoint}")
+            # print(f"3 Distance: {self.distance}, Cords: {self.position},
+            #       Speed: {speed}, Waypoint: {self.waypoint}")
