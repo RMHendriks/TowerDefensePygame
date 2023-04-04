@@ -6,6 +6,7 @@ from cell import Cell
 from road import Road
 from tower import Tower
 from player import Player
+from enemy_wave import EnemyWave
 from enemy import Enemy
 from projectile import Projectile
 
@@ -51,7 +52,9 @@ def main() -> None:
     road_list: List[Vector2] = draw_path(grid)
 
     # initialise enemies
-    enemy_list = [Enemy(road_list, CELL_SIZE), Enemy(road_list, CELL_SIZE)]
+    # TODO work out the wave system
+    wave_list: List[EnemyWave] = [EnemyWave(road_list, CELL_SIZE)]
+    enemy_list = wave_list[0].get_enemy_wave()
 
     # initialise list for towers
     tower_list: List[Tower] = []
@@ -64,6 +67,7 @@ def main() -> None:
 
         # set game speed
         game_speed = SPEED * clock.tick(60)
+        
 
         # event handeler
         for event in pygame.event.get():
