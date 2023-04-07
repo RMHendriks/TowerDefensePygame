@@ -68,22 +68,20 @@ def main() -> None:
         # set game speed
         game_speed = SPEED * clock.tick(60)
         
-
         # event handeler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_running = False
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if buy_tower(grid, tower_list, enemy_list):
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if buy_tower(grid, tower_list, enemy_list):
                         player.increment_score(1)
 
         player.increment_coins(0.1 * game_speed)
 
         window.fill(BLACK)
 
-        # update positions, spawns and drawing
+        # update positions, spawn objects and draw objects
         for list in grid:
             for cell in list:
                 cell.draw(window)
@@ -125,19 +123,27 @@ def main() -> None:
 
 
 def buy_tower(grid, tower_list: list[Tower], enemy_list: list[Enemy]):
+    """Function that returns True if a tower is buyable on the mouse click
+    and creates a tower object at the mouse location. Else return False"""
 
-    for x, list in enumerate(grid):
-        for y, cell in enumerate(list):
-            if cell.clicked() and not isinstance(cell, Road):
-                grid[x][y] = Tower(cell.x, cell.y, CELL_SIZE, enemy_list)
-                tower_list.append(grid[x][y])
-                return True
+    mouse_position = pygame.mouse.get_pos()
+    x = mouse_position[0] // CELL_SIZE
+    y = mouse_position[1] // CELL_SIZE
+    cell = grid[x][y]
+
+    if cell.clicked(mouse_position) and not isinstance(cell, Road):
+        grid[x][y] = Tower(cell.x, cell.y, CELL_SIZE, enemy_list)
+        tower_list.append(grid[x][y])
+        return True
 
     return False
 
 
-# draw path on the grid
+# TODO implement a better algorithm
 def draw_path(grid: list[list[Cell]]) -> list[Vector2]:
+    """Function that creates a path through the supplied grid.
+    Returns a list of Vector2 coordinates of the center of each
+    road tile, in order."""
 
     y = random.randint(1, len(grid) - 1)
     x = 0

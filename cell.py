@@ -34,16 +34,14 @@ class Cell():
         pygame.draw.rect(window, self.color,
                          [self.x, self.y, self.width - 1, self.height - 1])
 
-    def clicked(self) -> bool:
+    def clicked(self, mouse_position) -> bool:
         """ Check if the cell has been clicked.
         Return True if the tile has been clicked, False if not. """
 
-        self.mouse_position = pygame.mouse.get_pos()
-
-        if (self.y + self.height > self.mouse_position[1]
-           and self.y < self.mouse_position[1]
-           and self.x + self.width > self.mouse_position[0]
-           and self.x < self.mouse_position[0]):
+        if (self.y + self.height > mouse_position[1]
+           and self.y < mouse_position[1]
+           and self.x + self.width > mouse_position[0]
+           and self.x < mouse_position[0]):
 
             return True
 

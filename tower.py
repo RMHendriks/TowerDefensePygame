@@ -51,6 +51,9 @@ class Tower(Cell):
     def select_target(self) -> bool:
         """ Selects are target within range and returns True if an enemy. """
 
+        # TODO make sure the tower searches for a new target if 
+        # predicted_health <= 0 but the current target is still alive
+
         # check if the target has been removed from the list
         # and change target to None
         if self.target not in self.enemy_list:
