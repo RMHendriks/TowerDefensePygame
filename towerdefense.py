@@ -67,7 +67,7 @@ def main() -> None:
 
         # set game speed
         game_speed = SPEED * clock.tick(60)
-        
+
         # event handeler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -75,7 +75,7 @@ def main() -> None:
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if buy_tower(grid, tower_list, enemy_list):
-                        player.increment_score(1)
+                    player.increment_score(1)
 
         player.increment_coins(0.1 * game_speed)
 

@@ -37,9 +37,8 @@ class Tower(Cell):
            self.shooting_cooldown and self.select_target())
            and isinstance(self.target, Enemy)):
 
-            if self.target.get_projected_damage() > 0:
-                self.cooldown_timer = pygame.time.get_ticks()
-                return True
+            self.cooldown_timer = pygame.time.get_ticks()
+            return True
 
         return False
 
@@ -51,16 +50,14 @@ class Tower(Cell):
     def select_target(self) -> bool:
         """ Selects are target within range and returns True if an enemy. """
 
-        # TODO make sure the tower searches for a new target if 
-        # predicted_health <= 0 but the current target is still alive
-
         # check if the target has been removed from the list
         # and change target to None
         if self.target not in self.enemy_list:
             self.target = None
 
         # keep the same target if the target is still in range
-        if self.target is not None:
+        # and not projected to die
+        if self.target is not None and self.target.get_projected_damage() > 0:
             if self.distance_to_target(self.target) <= self.range:
                 return True
 
@@ -68,8 +65,10 @@ class Tower(Cell):
         target = None
 
         # select the target closest to the tower
+        # and target is not projected to die
         for enemy in self.enemy_list:
-            if self.distance_to_target(enemy) < shortest_distance:
+            if (self.distance_to_target(enemy) < shortest_distance
+               and enemy.get_projected_damage() > 0):
                 target = enemy
 
         self.target = target

@@ -11,7 +11,7 @@ class Enemy():
     def __init__(self, road: list[Vector2], cell_size: int) -> None:
 
         self.road = road
-        self.position = Vector2(road[0].x - cell_size / 2, road[0].y)
+        self.position = Vector2(road[0].x - (cell_size / 2), road[0].y)
         self.radius = cell_size // 3
         self.color = GREEN
         self.waypoint = 0
