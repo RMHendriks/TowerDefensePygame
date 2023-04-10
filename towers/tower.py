@@ -1,8 +1,8 @@
 import pygame
 from typing import Optional
-from cell import Cell
-from enemy import Enemy
-from projectile import Projectile
+from cells.cell import Cell
+from enemies.enemy import Enemy
+from projectiles.projectile import Projectile
 
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)

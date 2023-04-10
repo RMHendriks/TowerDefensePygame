@@ -2,13 +2,14 @@ import pygame
 import random
 from typing import List
 from pygame.math import Vector2
-from cell import Cell
-from road import Road
-from tower import Tower
+from level import Level
+from cells.cell import Cell
+from cells.road import Road
+from towers.tower import Tower
 from player import Player
 from enemy_wave import EnemyWave
-from enemy import Enemy
-from projectile import Projectile
+from enemies.enemy import Enemy
+from projectiles.projectile import Projectile
 
 CELL_SIZE = 30
 SCREEN_WIDTH = 601
@@ -19,8 +20,14 @@ SPEED = 0.05
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-
 def main() -> None:
+    pygame.init()
+    window = pygame.display.set_mode((SCREEN_WIDTH,
+                                      SCREEN_HEIGHT + STAT_MENU_SIZE))
+    level = Level(SCREEN_WIDTH, SCREEN_HEIGHT, CELL_SIZE, SPEED)
+    level.run(window)
+
+def legacy_main() -> None:
 
     # pygame setup
     pygame.init()
@@ -139,7 +146,6 @@ def buy_tower(grid, tower_list: list[Tower], enemy_list: list[Enemy]):
     return False
 
 
-# TODO implement a better algorithm
 def draw_path(grid: list[list[Cell]]) -> list[Vector2]:
     """Function that creates a path through the supplied grid.
     Returns a list of Vector2 coordinates of the center of each

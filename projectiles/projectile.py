@@ -1,6 +1,6 @@
 import pygame
 from pygame.math import Vector2
-from enemy import Enemy
+from enemies.enemy import Enemy
 
 YELLOW = (230, 245, 66)
 

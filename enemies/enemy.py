@@ -12,13 +12,13 @@ class Enemy():
 
         self.road = road
         self.position = Vector2(road[0].x - (cell_size / 2), road[0].y)
+        self.waypoint = 0
         self.radius = cell_size // 3
         self.color = GREEN
-        self.waypoint = 0
 
         # Enemy attributes
-        self.speed = 1
-        self.health = 30
+        self.speed = 0
+        self.health = 0
         self.projected_health = self.health
 
         self.moving = True

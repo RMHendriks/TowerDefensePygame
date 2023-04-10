@@ -1,4 +1,4 @@
-from cell import Cell
+from cells.cell import Cell
 
 BROWN = (153, 102, 0)
 
