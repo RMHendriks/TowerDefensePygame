@@ -17,5 +17,7 @@ class EnemyNormal(Enemy):
         self.radius = cell_size // 3
         self.color = GREEN
         self.projected_health = self.health
+        self.score_value = 50
+        self.gold_value = 20
         
         

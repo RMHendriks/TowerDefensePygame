@@ -13,7 +13,9 @@ class EnemySlow(Enemy):
         # Enemy attributes
         self.speed = 0.5
         self.health = 30
-        self.radius = cell_size // 2.5
+        self.radius = cell_size // 2
         self.color = RED
         self.projected_health = self.health
         self.value = 8
+        self.score_value = 100
+        self.gold_value = 30

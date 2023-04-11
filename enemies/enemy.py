@@ -12,14 +12,16 @@ class Enemy():
 
         self.road = road
         self.position = Vector2(road[0].x - (cell_size / 2), road[0].y)
-        self.waypoint = 0
-        self.radius = cell_size // 3
+        self.waypoint: int = 0
+        self.radius: int = cell_size // 3
         self.color = GREEN
 
         # Enemy attributes
-        self.speed = 0
-        self.health = 0
-        self.projected_health = self.health
+        self.speed: float = 0
+        self.health: int = 0
+        self.projected_health: int = self.health
+        self.score_value = 0
+        self.gold_value = 0
 
         self.moving = True
         self.target = road[self.waypoint]
@@ -64,8 +66,16 @@ class Enemy():
         """ Return the projected health of the enemy. """
 
         return self.projected_health
+        
+    def get_score_value(self) -> int:
+        
+        return self.score_value
+    
+    def get_gold_value(self) -> int:
+        
+        return self.gold_value
 
-    def check_if_dead(self):
+    def check_if_dead(self) -> bool:
         """ Returns True if the target has been killed, False if not. """
 
         if self.health <= 0:

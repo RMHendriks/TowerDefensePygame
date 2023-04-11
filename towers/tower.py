@@ -17,6 +17,7 @@ class Tower(Cell):
 
         self.color = RED
         self.range = size * 5
+        self.tower_cost = 100
         self.shooting_cooldown = 1000
         self.cooldown_timer = pygame.time.get_ticks()
 
@@ -29,6 +30,11 @@ class Tower(Cell):
 
         pygame.draw.circle(window, BLACK, self.get_center_coord(),
                            self.width / 4)
+        
+    def get_tower_cost(self) -> int:
+        """ Return the cost of the tower. """
+        
+        return self.tower_cost
 
     def shoot_cooldown(self) -> bool:
         """ Checks if the tower is on cooldown and returns True or False. """

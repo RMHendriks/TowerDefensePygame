@@ -16,3 +16,5 @@ class EnemyFast(Enemy):
         self.radius = cell_size // 5
         self.color = MAGNETA
         self.projected_health = self.health
+        self.score_value = 20
+        self.gold_value = 10
