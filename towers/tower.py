@@ -29,7 +29,7 @@ class Tower(Cell):
         super().draw(window)
 
         pygame.draw.circle(window, BLACK, self.get_center_coord(),
-                           self.width / 4)
+                           self.size / 4)
         
     def get_tower_cost(self) -> int:
         """ Return the cost of the tower. """

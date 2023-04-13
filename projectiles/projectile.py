@@ -23,7 +23,7 @@ class Projectile():
         self.start_speed = self.speed
         self.max_speed = 2.5
 
-        self.magnitude = 0.0
+        # self.magnitude = 0.0
 
     def draw(self, window) -> None:
         """ Draws the projectile to the screen. """
