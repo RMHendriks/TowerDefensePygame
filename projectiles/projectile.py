@@ -2,9 +2,6 @@ import pygame
 from pygame.math import Vector2
 from enemies.enemy import Enemy
 
-YELLOW = (230, 245, 66)
-
-
 class Projectile():
     """ Class for projectile behaviour """
 
@@ -12,7 +9,7 @@ class Projectile():
 
         self.position = position
         self.radius = size / 6
-        self.color = YELLOW
+        self.color = pygame.Color("yellow")
 
         # choose target to shoot at
         self.target = target
@@ -22,8 +19,6 @@ class Projectile():
         self.speed = 2.0
         self.start_speed = self.speed
         self.max_speed = 2.5
-
-        # self.magnitude = 0.0
 
     def draw(self, window) -> None:
         """ Draws the projectile to the screen. """

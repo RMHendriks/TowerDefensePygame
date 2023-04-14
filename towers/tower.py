@@ -4,18 +4,14 @@ from cells.cell import Cell
 from enemies.enemy import Enemy
 from projectiles.projectile import Projectile
 
-RED = (255, 0, 0)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
-
 class Tower(Cell):
     """ Class for tower behaviour. Child of Cell. """
 
     def __init__(self, x, y, size, enemy_list: list[Enemy]) -> None:
         super().__init__(x, y, size)
 
-        self.color = RED
+        self.color = pygame.Color("red")
+        self.inner_color = pygame.Color("black")
         self.range = size * 5
         self.tower_cost = 100
         self.shooting_cooldown = 1000
@@ -23,12 +19,14 @@ class Tower(Cell):
 
         self.enemy_list = enemy_list
         self.target: Optional[Enemy] = None
+        self.closest_target_mode = False
 
     def draw(self, window) -> None:
         """ Draws the tower to the screen. """
         super().draw(window)
 
-        pygame.draw.circle(window, BLACK, self.get_center_coord(),
+        pygame.draw.circle(window, self.inner_color,
+                           self.get_center_coord(),
                            self.size / 4)
         
     def get_tower_cost(self) -> int:
@@ -67,16 +65,28 @@ class Tower(Cell):
             if self.distance_to_target(self.target) <= self.range:
                 return True
 
-        shortest_distance = self.range
         target = None
+        
+        # Either select the closest target or the targest furthest on the road
+        if self.closest_target_mode:
+            shortest_distance = self.range
+            
+            for enemy in self.enemy_list:
+                if (self.distance_to_target(enemy) < shortest_distance
+                   and enemy.get_projected_damage() > 0):
+                    target = enemy
+                    
+        else:
+            waypoint = 0
 
-        # select the target closest to the tower
-        # and target is not projected to die
-        for enemy in self.enemy_list:
-            if (self.distance_to_target(enemy) < shortest_distance
-               and enemy.get_projected_damage() > 0):
-                target = enemy
-
+            for enemy in self.enemy_list:
+                if (self.distance_to_target(enemy) < self.range and
+                    enemy.get_waypoint() > waypoint and 
+                    enemy.get_projected_damage() > 0):
+                    
+                    target = enemy
+                    waypoint = enemy.get_waypoint()
+                    
         self.target = target
 
         return True if self.target is not None else False

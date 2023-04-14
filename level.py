@@ -5,10 +5,14 @@ from pygame.math import Vector2
 from cells.cell import Cell
 from cells.road import Road
 from towers.tower import Tower
+from towers.towerlight import TowerLight
+from towers.towertesla import TowerTesla
 from player import Player
 from enemy_wave import EnemyWave
 from enemies.enemy import Enemy
 from projectiles.projectile import Projectile
+from projectiles.projectileorb import ProjectileOrb
+from projectiles.projectilebeam import ProjectileBeam
 
 
 class Level():
@@ -30,6 +34,10 @@ class Level():
         # initialise grid
         self.grid = self.initialize_grid()
         
+        self.image = pygame.image.load('sprites/tower1.png').convert_alpha()
+        self.image2 = pygame.image.load('sprites/tower2.png').convert_alpha()
+
+        
         # Initialise road 
         self.road_list: List[Vector2] = self.draw_path()
         
@@ -44,7 +52,7 @@ class Level():
         # initialize list for projectiles
         self.projectile_list: List[Projectile] = []
         
-    def run(self, window) -> None:
+    def run(self, window: pygame.surface.Surface) -> None:
         """ Method that runs the game loop of the level.
         Needs the game window as argument. """
         
@@ -61,8 +69,11 @@ class Level():
                 if event.type == pygame.QUIT:
                     self.game_running = False
 
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    self.buy_tower()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.buy_tower(TowerLight)
+                    elif event.button == 3:
+                        self.buy_tower(TowerTesla)
 
             self.player.increment_gold(0.1 * game_speed)
 
@@ -83,6 +94,10 @@ class Level():
                     self.player.increment_gold(enemy.get_gold_value())
                     self.enemy_list.pop(self.enemy_list.index(enemy))
                     continue
+                elif not enemy.check_if_moving():
+                    self.player.lose_life()
+                    del self.enemy_list[self.enemy_list.index(enemy)]
+                    continue
                 enemy.move(game_speed)
                 enemy.draw(window, self.font)
 
@@ -94,25 +109,31 @@ class Level():
                 projectile.draw(window)
 
             for tower in self.tower_list:
-                pygame.draw.circle(window, pygame.Color("black"), tower.get_center_coord(),
-                                tower.range, 1)
+                pygame.draw.circle(window, pygame.Color("black"), 
+                                   tower.get_center_coord(),
+                                   tower.range, 1)
 
             self.render_hud(window)
 
             # update screen
             pygame.display.update()
 
-    def buy_tower(self) -> bool:
+    def buy_tower(self, towertype: Tower) -> bool:
         """Method that returns True if a tower is buyable on the mouse click
         and creates a tower object at the mouse location. Else return False"""
 
         mouse_position = pygame.mouse.get_pos()
+        print(mouse_position)
         x = mouse_position[0] // self.cell_size
         y = mouse_position[1] // self.cell_size
+        if mouse_position[1] >= self.screen_height:
+            return False
+        
         cell = self.grid[x][y]
 
         if cell.clicked(mouse_position) and not isinstance(cell, Road):
-            tower = Tower(cell.x, cell.y, self.cell_size, self.enemy_list)
+            tower = towertype(cell.position.x, cell.position.y,
+                              self.cell_size, self.enemy_list)
             if self.player.can_pay_gold(tower.get_tower_cost()):
                 self.grid[x][y] = tower
                 self.tower_list.append(self.grid[x][y])
@@ -144,7 +165,7 @@ class Level():
         low_y = 2
         high_y = len(self.grid) - 3
 
-        self.grid[x][y] = Road(self.grid[x][y].x, self.grid[x][y].y, self.cell_size)
+        self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
         road_list = [self.grid[x][y].get_center_coord()]
 
         while x < len(self.grid[0]) - 1:
@@ -154,7 +175,7 @@ class Level():
                     if isinstance(self.grid[x + 1][y], Road):
                         continue
                     x += 1
-                    self.grid[x][y] = Road(self.grid[x][y].x, self.grid[x][y].y, self.cell_size)
+                    self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
                     road_list.append(self.grid[x][y].get_center_coord())
                 case 1:
                     if y > high_y:
@@ -163,7 +184,7 @@ class Level():
                     isinstance(self.grid[x - 1][y + 1], Road)):
                         continue
                     y += 1
-                    self.grid[x][y] = Road(self.grid[x][y].x, self.grid[x][y].y, self.cell_size)
+                    self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
                     road_list.append(self.grid[x][y].get_center_coord())
                 case 2:
                     if y < low_y:
@@ -172,7 +193,7 @@ class Level():
                     isinstance(self.grid[x - 1][y - 1], Road)):
                         continue
                     y -= 1
-                    self.grid[x][y] = Road(self.grid[x][y].x, self.grid[x][y].y, self.cell_size)
+                    self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
                     road_list.append(self.grid[x][y].get_center_coord())
 
         return road_list
@@ -200,7 +221,7 @@ class Level():
                 else:
                     del self.wave_list[0]
                     
-    def render_hud(self, window) -> None:
+    def render_hud(self, window: pygame.surface.Surface) -> None:
         """ Render the hud at the bottom of the screen. """
         
         score_text = self.font.render("Score: " + str(self.player.get_score()),
@@ -216,3 +237,10 @@ class Level():
         gold_text = self.font.render("Gold: " + str(round(self.player.get_gold())),
                                      True, pygame.Color("white"))
         window.blit(gold_text, [self.screen_width / 4, self.screen_height + 10])
+
+        lives_text = self.font.render("Lives: " + str(round(self.player.get_lives())),
+                                     True, pygame.Color("white"))
+        window.blit(lives_text, [self.screen_width / 1.5, self.screen_height + 10])
+        
+        window.blit(self.image, [self.screen_width - 64, self.screen_height + 10])
+        window.blit(self.image2, [self.screen_width - 32, self.screen_height + 10])

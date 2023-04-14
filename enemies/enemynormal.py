@@ -1,8 +1,6 @@
-from enemies.enemy import Enemy
+import pygame
 from pygame.math import Vector2
-
-GREEN = (75, 150, 25)
-
+from enemies.enemy import Enemy
 
 class EnemyNormal(Enemy):
     """ Class that inherits the Enemy class and contains the
@@ -15,8 +13,9 @@ class EnemyNormal(Enemy):
         self.speed = 1
         self.health = 20
         self.radius = cell_size // 3
-        self.color = GREEN
+        self.color = pygame.Color("forestgreen")
         self.projected_health = self.health
+        self.max_health = self.health
         self.score_value = 50
         self.gold_value = 20
         

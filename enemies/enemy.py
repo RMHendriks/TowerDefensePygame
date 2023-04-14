@@ -1,10 +1,6 @@
 import pygame
 from pygame.math import Vector2
 
-GREEN = (75, 150, 25)
-BLACK = (0, 0, 0)
-
-
 class Enemy():
     """ Class for enemy behaviour. """
 
@@ -14,11 +10,13 @@ class Enemy():
         self.position = Vector2(road[0].x - (cell_size / 2), road[0].y)
         self.waypoint: int = 0
         self.radius: int = cell_size // 3
-        self.color = GREEN
+        self.color = pygame.Color("green")
+        self.cell_size = cell_size
 
         # Enemy attributes
-        self.speed: float = 0
-        self.health: int = 0
+        self.speed: float = 1
+        self.health: int = 1
+        self.max_health = self.health
         self.projected_health: int = self.health
         self.score_value = 0
         self.gold_value = 0
@@ -27,32 +25,37 @@ class Enemy():
         self.target = road[self.waypoint]
 
     def draw(self, window, font) -> None:
+        """ Method that draws the enemey to the screen. """
 
         pygame.draw.circle(window, self.color, self.position, self.radius)
 
-        # display health
-        health_text = font.render(str(self.health), True, BLACK)
-        window.blit(health_text, self.position)
+        # TODO render the healthbar after all enemies have been rendered
+        # display healthbar
+        health_bar_position = [self.position.x - self.cell_size // 3,
+                               self.position.y - self.cell_size // 2,
+                               self.cell_size // 1.5, self.cell_size // 10]
+        
+        pygame.draw.rect(window, pygame.Color("red"), health_bar_position)
+        
+        # display current health on healthbar
+        health_bar_position[2] = self.cell_size // 1.5 * (self.health /
+                                                          self.max_health)
+        
+        pygame.draw.rect(window, pygame.Color("green"), health_bar_position)
 
-    def distance_to_waypoint(self) -> Vector2:
-
-        return Vector2(self.target - self.position)
-
-    def set_to_next_waypoint(self) -> None:
-
-        self.waypoint += 1
-
-        if self.waypoint < len(self.road):
-            self.target = self.road[self.waypoint]
-        else:
-            self.moving = False
+    def check_if_moving(self) -> bool:
+        """ Method that returns False if the enemy has
+        reached the last waypoint. """
+        
+        return self.moving
 
     def get_radius(self) -> float:
+        """ Method that returns the radius of the enemy as a float. """
 
         return self.radius
 
     def receive_damage(self, damage: int) -> None:
-        """ subtracts the incoming damage from an attack. """
+        """ Method that subtracts the incoming damage from an attack. """
 
         self.health -= damage
 
@@ -68,10 +71,12 @@ class Enemy():
         return self.projected_health
         
     def get_score_value(self) -> int:
+        """ Return the score value of the enemy. """
         
         return self.score_value
     
     def get_gold_value(self) -> int:
+        """ Return the gold value of the enemy. """
         
         return self.gold_value
 
@@ -82,56 +87,43 @@ class Enemy():
             return True
 
         return False
+    
+    def get_waypoint(self) -> int:
+        """ Returns the current waypoint of the enemy. """
+        
+        return self.waypoint
+
+    def distance_to_waypoint(self) -> Vector2:
+        """ Returns a Vector2 of de distance between the waypoint
+        and the enemey. """
+
+        return Vector2(self.target - self.position)
+
+
+    def set_to_next_waypoint(self) -> None:
+        """ Method that selects the next waipoint on the list.
+        The enemy will stop moving if the enemy has reached the last
+        waypoint. """
+
+        self.waypoint += 1
+
+        if self.waypoint < len(self.road):
+            self.target = self.road[self.waypoint]
+        else:
+            self.moving = False
+            
 
     def move(self, game_speed: float) -> None:
-        """ Moves the enemy. """
+        """ Method that moves the enemy towards the next waypoint. """
 
         if self.moving:
 
-            # calculate distance toward waypoint
-            self.distance = self.distance_to_waypoint()
+            waypoint_distance: Vector2 = self.distance_to_waypoint()
+            movement = waypoint_distance.normalize() * self.speed * game_speed
 
-            speed = game_speed * self.speed
-            # decimal the numbers float to prevent arithemetic shenanigans
-            speed = round(speed, 4)
-
-            # fix to prevent floating point arithmetic shenanigans
-            if abs(self.distance.x) == speed or abs(self.distance.y) == speed:
+            if (waypoint_distance == movement or
+               waypoint_distance.length_squared() < movement.length_squared()):
                 self.position = self.target
                 self.set_to_next_waypoint()
-                return
-
-            # print(f"1 Distance: {self.distance}, Cords: {self.position},
-            #       Speed: {speed}, Waypoint: {self.waypoint}")
-
-            # places the object on the waypoint and saves the remainder
-            # if the speed is larger than the distance to the waypoint
-            if (self.distance.x < speed and self.distance.x > 0
-               and self.distance.y == 0):
-                speed = speed - self.distance.x
-                self.position = Vector2(self.target)
-                self.set_to_next_waypoint()
-            elif (self.distance.y < speed and self.distance.y > 0
-                  and self.distance.x == 0):
-                speed = speed - self.distance.y
-                self.position = Vector2(self.target)
-                self.set_to_next_waypoint()
-
-            # print(f"2 Distance: {self.distance}, Cords: {self.position},
-            #       Speed: {speed}, Waypoint: {self.waypoint}")
-
-            self.distance = self.distance_to_waypoint()
-            speed = round(speed, 4)
-
-            if self.position != self.target:
-                if self.distance.x > 0:
-                    self.position.x = self.position.x + speed
-                elif self.distance.y > 0:
-                    self.position.y = self.position.y + speed
-                elif self.distance.y < 0:
-                    self.position.y = self.position.y - speed
             else:
-                self.set_to_next_waypoint()
-
-            # print(f"3 Distance: {self.distance}, Cords: {self.position},
-            #       Speed: {speed}, Waypoint: {self.waypoint}")
+                self.position = self.position + movement

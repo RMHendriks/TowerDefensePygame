@@ -1,26 +1,15 @@
 import pygame
 from pygame.math import Vector2
 
-WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
-
-
 class Cell():
     """ Class that holds the properties of a cell. """
 
     def __init__(self, x: int, y: int, size: int) -> None:
 
-        # TODO subject for removal
-        self.x = x
-        self.y = y
-        self.width = size
-        self.height = size
-
-        # TODO update to this format
         self.position = Vector2(x, y)
         self.size = size
 
-        self.color = WHITE
+        self.color = pygame.Color("white")
 
     def get_center_coord(self) -> Vector2:
         """ Return the center coordinate of the cell. """

@@ -1,3 +1,4 @@
+import pygame
 from enemies.enemy import Enemy
 from pygame.math import Vector2
 
@@ -14,8 +15,9 @@ class EnemySlow(Enemy):
         self.speed = 0.5
         self.health = 30
         self.radius = cell_size // 2
-        self.color = RED
+        self.color = pygame.Color("red")
         self.projected_health = self.health
+        self.max_health = self.health
         self.value = 8
         self.score_value = 100
         self.gold_value = 30

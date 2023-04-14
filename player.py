@@ -35,3 +35,18 @@ class Player():
         """ Get the amount of gold the player currently has. """
 
         return self.gold
+
+    def get_lives(self) -> int:
+        """ Get the amount of health the player has. """
+        
+        return self.lives
+    
+    def lose_life(self) -> bool:
+        """ Make the player lose a life.
+        Return true if the player has no lives left. """
+
+        self.lives -= 1
+        if self.lives == 0:
+            return True
+
+        return False
