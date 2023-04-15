@@ -28,7 +28,13 @@ class Tower(Cell):
         pygame.draw.circle(window, self.inner_color,
                            self.get_center_coord(),
                            self.size / 4)
+    
+    def hover_draw(self, window) -> None:
+        """ Draws a circle around the tower to display the range. """
         
+        pygame.draw.circle(window, pygame.Color("black"), 
+                           self.get_center_coord(), self.range, 1)
+
     def get_tower_cost(self) -> int:
         """ Return the cost of the tower. """
         

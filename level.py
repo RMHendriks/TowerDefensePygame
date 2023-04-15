@@ -32,7 +32,7 @@ class Level():
         self.player = Player()
         
         # initialise grid
-        self.grid = self.initialize_grid()
+        self.grid: List[Cell] = self.initialize_grid()
         
         self.image = pygame.image.load('sprites/tower1.png').convert_alpha()
         self.image2 = pygame.image.load('sprites/tower2.png').convert_alpha()
@@ -64,17 +64,10 @@ class Level():
             
             window.fill(pygame.Color("black"))
 
-            # event handeler
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.game_running = False
+            # check for events
+            self.event_handler(window)
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        self.buy_tower(TowerLight)
-                    elif event.button == 3:
-                        self.buy_tower(TowerTesla)
-
+            # passive gold income
             self.player.increment_gold(0.1 * game_speed)
 
             # update positions, spawn objects and draw objects
@@ -107,36 +100,54 @@ class Level():
                     del self.projectile_list[self.projectile_list.index(projectile)]
 
                 projectile.draw(window)
-
-            for tower in self.tower_list:
-                pygame.draw.circle(window, pygame.Color("black"), 
-                                   tower.get_center_coord(),
-                                   tower.range, 1)
+            
+            if isinstance(self.cell, Tower):
+                self.cell.hover_draw(window)
 
             self.render_hud(window)
 
             # update screen
             pygame.display.update()
+            
+    def event_handler(self, window: pygame.surface.Surface) -> None:
+        """ Method that handles events. No return value. """
+    
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.game_running = False
+                
+            self.mouse_position = pygame.mouse.get_pos()
+            self.mouse_x = self.mouse_position[0] // self.cell_size
+            self.mouse_y = self.mouse_position[1] // self.cell_size
+            
+            print(self.mouse_position)
+            
+            if (self.mouse_position[1] >= self.screen_height - 2 or
+               self.mouse_position[0] >= self.screen_width - 2):
+                return
+            
+            self.cell = self.grid[self.mouse_x][self.mouse_y]
+                
+            if (self.cell.interacted(self.mouse_position)):
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.buy_tower(TowerLight)
+                    elif event.button == 3:
+                        self.buy_tower(TowerTesla)
 
     def buy_tower(self, towertype: Tower) -> bool:
         """Method that returns True if a tower is buyable on the mouse click
         and creates a tower object at the mouse location. Else return False"""
-
-        mouse_position = pygame.mouse.get_pos()
-        print(mouse_position)
-        x = mouse_position[0] // self.cell_size
-        y = mouse_position[1] // self.cell_size
-        if mouse_position[1] >= self.screen_height:
-            return False
         
-        cell = self.grid[x][y]
+        if (self.cell.interacted(self.mouse_position) and
+           not isinstance(self.cell, (Road, Tower))):
 
-        if cell.clicked(mouse_position) and not isinstance(cell, Road):
-            tower = towertype(cell.position.x, cell.position.y,
+            tower = towertype(self.cell.position.x, self.cell.position.y,
                               self.cell_size, self.enemy_list)
             if self.player.can_pay_gold(tower.get_tower_cost()):
-                self.grid[x][y] = tower
-                self.tower_list.append(self.grid[x][y])
+                self.grid[self.mouse_x][self.mouse_y] = tower
+                self.tower_list.append(self.grid[self.mouse_x][self.mouse_y])
                 return True
 
         return False

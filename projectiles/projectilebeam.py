@@ -31,7 +31,7 @@ class ProjectileBeam(Projectile):
 
         if (pygame.time.get_ticks() - self.cooldown_timer > 
            self.damage_tick_timer):
-            
+
             self.cooldown_timer = pygame.time.get_ticks()
             self.deal_projected_damage()
             self.deal_damage()
