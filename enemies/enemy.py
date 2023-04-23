@@ -11,6 +11,7 @@ class Enemy():
         self.waypoint: int = 0
         self.radius: int = cell_size // 3
         self.color = pygame.Color("green")
+        self.slowed_color = pygame.Color("turquoise1")
         self.cell_size = cell_size
 
         # Enemy attributes
@@ -20,28 +21,35 @@ class Enemy():
         self.projected_health: int = self.health
         self.score_value = 0
         self.gold_value = 0
+        self.slow_time = 0
 
         self.moving = True
+        self.slowed = False
+        self.slow_timer = pygame.time.get_ticks()
         self.target = road[self.waypoint]
 
     def draw(self, window, font) -> None:
         """ Method that draws the enemey to the screen. """
 
         pygame.draw.circle(window, self.color, self.position, self.radius)
+        
+        if self.slowed:
+            pygame.draw.circle(window, self.slowed_color, self.position, self.radius)
 
         # TODO render the healthbar after all enemies have been rendered
         # display healthbar
-        health_bar_position = [self.position.x - self.cell_size // 3,
-                               self.position.y - self.cell_size // 2,
-                               self.cell_size // 1.5, self.cell_size // 10]
-        
-        pygame.draw.rect(window, pygame.Color("red"), health_bar_position)
-        
-        # display current health on healthbar
-        health_bar_position[2] = self.cell_size // 1.5 * (self.health /
-                                                          self.max_health)
-        
-        pygame.draw.rect(window, pygame.Color("green"), health_bar_position)
+        if self.health != self.max_health:
+            health_bar_position = [self.position.x - self.cell_size // 3,
+                                self.position.y - self.cell_size // 2,
+                                self.cell_size // 1.5, self.cell_size // 10]
+            
+            pygame.draw.rect(window, pygame.Color("red"), health_bar_position)
+            
+            # display current health on healthbar
+            health_bar_position[2] = self.cell_size // 1.5 * (self.health /
+                                                            self.max_health)
+            
+            pygame.draw.rect(window, pygame.Color("green"), health_bar_position)
 
     def check_if_moving(self) -> bool:
         """ Method that returns False if the enemy has
@@ -118,6 +126,9 @@ class Enemy():
 
         if self.moving:
 
+            if self.slowed:
+                self.slowed = self.check_if_slowed()
+
             waypoint_distance: Vector2 = self.distance_to_waypoint()
             movement = waypoint_distance.normalize() * self.speed * game_speed
 
@@ -127,3 +138,23 @@ class Enemy():
                 self.set_to_next_waypoint()
             else:
                 self.position = self.position + movement
+
+    def apply_slow(self, slow_timer) -> None:
+        """ Applies a slow tot the target. """
+        
+        self.slow_time = slow_timer
+        self.slow_timer = pygame.time.get_ticks()
+        
+        if not self.slowed:
+            self.speed /= 2
+            self.slowed = True
+            
+    def check_if_slowed(self) -> bool:
+        """ Checks if the enemy is slowed, return True if slowed. """
+
+        if (pygame.time.get_ticks() - self.slow_timer > self.slow_time
+           and self.slowed):
+            self.speed *= 2
+            return False
+
+        return True

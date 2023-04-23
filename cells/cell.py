@@ -24,7 +24,7 @@ class Cell():
                          [self.position.x, self.position.y,
                           self.size - 1, self.size - 1])
 
-    def interacted(self, mouse_position) -> bool:
+    def interacted(self, mouse_position: tuple[int, int]) -> bool:
         """ Check if the cell has been interacted with by hovering or clicking.
         Return True if the tile has been interacted with, False if not. """
 

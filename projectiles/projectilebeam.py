@@ -14,8 +14,8 @@ class ProjectileBeam(Projectile):
         self.color = pygame.Color("yellow")
 
         # damage ticks
-        self.cooldown_timer = pygame.time.get_ticks()
         self.damage_tick_timer = 500
+        self.cooldown_timer = pygame.time.get_ticks() - self.damage_tick_timer
 
         # projectile attributes
         self.damage = 1
@@ -35,6 +35,9 @@ class ProjectileBeam(Projectile):
             self.cooldown_timer = pygame.time.get_ticks()
             self.deal_projected_damage()
             self.deal_damage()
+            
+            if self.target.get_projected_damage() < 0:
+                del self
 
     def check_collision(self) -> bool:
         """ Return True if the target is within the radius of the target.

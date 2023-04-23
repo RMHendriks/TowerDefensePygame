@@ -6,12 +6,14 @@ from cells.cell import Cell
 from cells.road import Road
 from towers.tower import Tower
 from towers.towerlight import TowerLight
+from towers.towerice import TowerIce
 from towers.towertesla import TowerTesla
 from player import Player
 from enemy_wave import EnemyWave
 from enemies.enemy import Enemy
 from projectiles.projectile import Projectile
 from projectiles.projectileorb import ProjectileOrb
+from projectiles.projectileice import ProjectileIce
 from projectiles.projectilebeam import ProjectileBeam
 
 
@@ -27,6 +29,7 @@ class Level():
         self.speed = speed
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont('agencyfb', 25)
+        self.cell = Cell(0, 0, cell_size)
         
         # initialise the player
         self.player = Player()
@@ -36,7 +39,6 @@ class Level():
         
         self.image = pygame.image.load('sprites/tower1.png').convert_alpha()
         self.image2 = pygame.image.load('sprites/tower2.png').convert_alpha()
-
         
         # Initialise road 
         self.road_list: List[Vector2] = self.draw_path()
@@ -60,51 +62,18 @@ class Level():
         while self.game_running:
 
             # set game speed
-            game_speed = self.speed * self.clock.tick(60)
+            self.game_speed = self.speed * self.clock.tick()
             
             window.fill(pygame.Color("black"))
 
             # check for events
             self.event_handler(window)
-
-            # passive gold income
-            self.player.increment_gold(0.1 * game_speed)
-
-            # update positions, spawn objects and draw objects
-            self.spawn_enemies()
             
-            for list in self.grid:
-                for cell in list:
-                    cell.draw(window)
-
-            for tower in self.tower_list:
-                if tower.shoot_cooldown() and self.enemy_list:
-                    self.projectile_list.append(tower.spawn_projectile())
-
-            for enemy in self.enemy_list:
-                if enemy.check_if_dead():
-                    self.player.increment_score(enemy.get_score_value())
-                    self.player.increment_gold(enemy.get_gold_value())
-                    self.enemy_list.pop(self.enemy_list.index(enemy))
-                    continue
-                elif not enemy.check_if_moving():
-                    self.player.lose_life()
-                    del self.enemy_list[self.enemy_list.index(enemy)]
-                    continue
-                enemy.move(game_speed)
-                enemy.draw(window, self.font)
-
-            for projectile in self.projectile_list:
-                projectile.move(game_speed)
-                if projectile.check_collision():
-                    del self.projectile_list[self.projectile_list.index(projectile)]
-
-                projectile.draw(window)
+            self.update()
+            self.draw(window)
             
-            if isinstance(self.cell, Tower):
-                self.cell.hover_draw(window)
-
-            self.render_hud(window)
+            if self.player.get_lives() <= 0:
+                self.game_running = False
 
             # update screen
             pygame.display.update()
@@ -119,9 +88,7 @@ class Level():
             self.mouse_position = pygame.mouse.get_pos()
             self.mouse_x = self.mouse_position[0] // self.cell_size
             self.mouse_y = self.mouse_position[1] // self.cell_size
-            
-            print(self.mouse_position)
-            
+                        
             if (self.mouse_position[1] >= self.screen_height - 2 or
                self.mouse_position[0] >= self.screen_width - 2):
                 return
@@ -133,8 +100,45 @@ class Level():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         self.buy_tower(TowerLight)
+                    elif event.button == 2:
+                        self.buy_tower(TowerIce)
                     elif event.button == 3:
                         self.buy_tower(TowerTesla)
+
+    def update(self) -> None:
+        """ Updates the game. """
+        
+        # passive gold income
+        self.player.increment_gold(0.1 * self.game_speed)
+
+        # update positions and spawn objects
+        self.spawn_enemies()
+        self.shoot_tower_projectile()
+        self.update_enemy()
+        self.update_projectile()
+    
+    def draw(self, window: pygame.surface.Surface) -> None:
+        """ Draws the level. """
+        
+        # draws the grid
+        for list in self.grid:
+                for cell in list:
+                    cell.draw(window)
+                    
+        # draws the enemies
+        for enemy in self.enemy_list:
+            enemy.draw(window, self.font)
+
+        # draws the projectiles
+        for projectile in self.projectile_list:
+            projectile.draw(window)
+            
+        # draws range circles
+        if isinstance(self.cell, Tower):
+                self.cell.hover_draw(window)
+                
+        # draws the hud
+        self.render_hud(window)
 
     def buy_tower(self, towertype: Tower) -> bool:
         """Method that returns True if a tower is buyable on the mouse click
@@ -231,6 +235,36 @@ class Level():
                     self.enemy_list.append(enemy)
                 else:
                     del self.wave_list[0]
+                    
+    def shoot_tower_projectile(self):
+        """" Makes towers shoot an projectile if possible. """
+
+        for tower in self.tower_list:
+                if tower.shoot_cooldown() and self.enemy_list:
+                    self.projectile_list.append(tower.spawn_projectile())
+                    
+    def update_enemy(self):
+        """ Updates enemies. """
+        
+        for enemy in self.enemy_list:
+            if enemy.check_if_dead():
+                self.player.increment_score(enemy.get_score_value())
+                self.player.increment_gold(enemy.get_gold_value())
+                self.enemy_list.pop(self.enemy_list.index(enemy))
+                continue
+            elif not enemy.check_if_moving():
+                self.player.lose_life()
+                del self.enemy_list[self.enemy_list.index(enemy)]
+                continue
+            enemy.move(self.game_speed)
+            
+    def update_projectile(self):
+        """ Updates projectiles. """
+
+        for projectile in self.projectile_list:
+                projectile.move(self.game_speed)
+                if projectile.check_collision():
+                    del self.projectile_list[self.projectile_list.index(projectile)]
                     
     def render_hud(self, window: pygame.surface.Surface) -> None:
         """ Render the hud at the bottom of the screen. """
