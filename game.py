@@ -14,10 +14,15 @@ class Game():
         self.screen_height = screen_height
         self.speed = speed
         self.state = "menu"
-        self.main_menu_buttons = [Button(Vector2(300, 250), "menu", text="Play Campain"),
-                                  Button(Vector2(300, 350), "endless", text="Play Endless"),
-                                  Button(Vector2(300, 450), "menu", text="Options"),
-                                  Button(Vector2(300, 550), "quit", width=100, height=50, text="Exit")]
+        self.main_menu_buttons = [Button(Vector2(300, 250),"menu",
+                                         text="Play Campain"),
+                                  Button(Vector2(300, 350), "endless",
+                                         text="Play Endless"),
+                                  Button(Vector2(300, 450), "menu",
+                                         text="Options"),
+                                  Button(Vector2(300, 550), "quit",
+                                         width=100, height=50, text="Exit")]
+        self.cell_size_list = (5, 10, 15, 20, 30, 40, 50, 60, 100)
         
         self.logo = pygame.image.load('sprites/logo.png').convert_alpha()
            
@@ -43,10 +48,10 @@ class Game():
                     sys.exit()
 
             pygame.display.update()
-            
+
     def event_handler(self):
         """ Event handler for the menus. """
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -58,7 +63,7 @@ class Game():
                         for button in self.main_menu_buttons:
                             if button.clicked():
                                 self.state = button.state
-            
+
     def run_menu(self, window: pygame.surface.Surface):
         """ Run the menu screen. """
         window.fill(pygame.Color("white"))

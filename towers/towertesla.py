@@ -12,7 +12,6 @@ class TowerTesla(Tower):
         self.inner_color = pygame.Color("gray42")
         self.range = size * 5
         self.tower_cost = 75
-        self.shooting_cooldown = 1000
         self.closest_target_mode = True
         self.beam_active = False
         self.beam = None

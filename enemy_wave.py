@@ -6,6 +6,8 @@ from enemies.enemy import Enemy
 from enemies.enemynormal import EnemyNormal
 from enemies.enemyfast import EnemyFast
 from enemies.enemyslow import EnemySlow
+from enemies.enemypriest import EnemyPriest
+
 
 
 class EnemyWave():
@@ -22,7 +24,8 @@ class EnemyWave():
         self.wave_value = self.calculate_wave_value()
         self.enemy_dict: dict[int ,dict[int, Enemy]] = {1: {5: EnemyNormal},
                                                         2: {5: EnemyNormal, 2: EnemyFast},
-                                                        3: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow}}
+                                                        3: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow},
+                                                        4: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow, 8: EnemyPriest}}
         self.enemy_list: list[Enemy] = self.initialize_wave()
         
         # cooldown timers
@@ -32,7 +35,7 @@ class EnemyWave():
     def initialize_wave(self) -> list[Enemy]:
         """ Initialize a wave of enemies of a random size. """
 
-        wave_enemy_dict = self.enemy_dict[self.wave_level if self.wave_level < 3 else 3]
+        wave_enemy_dict = self.enemy_dict[self.wave_level if self.wave_level < 4 else 4]
         wave_value = 20
         lowest_value = min(wave_enemy_dict.keys())
         enemy_list: list[Enemy] = []

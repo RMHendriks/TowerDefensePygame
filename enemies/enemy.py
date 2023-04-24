@@ -51,6 +51,24 @@ class Enemy():
             
             pygame.draw.rect(window, pygame.Color("green"), health_bar_position)
 
+    def move(self, game_speed: float) -> None:
+        """ Method that moves the enemy towards the next waypoint. """
+
+        if self.moving:
+
+            if self.slowed:
+                self.slowed = self.check_if_slowed()
+
+            waypoint_distance: Vector2 = self.distance_to_waypoint()
+            movement = waypoint_distance.normalize() * self.speed * game_speed
+
+            if (waypoint_distance == movement or
+               waypoint_distance.length_squared() < movement.length_squared()):
+                self.position = self.target
+                self.set_to_next_waypoint()
+            else:
+                self.position = self.position + movement
+
     def check_if_moving(self) -> bool:
         """ Method that returns False if the enemy has
         reached the last waypoint. """
@@ -119,25 +137,6 @@ class Enemy():
             self.target = self.road[self.waypoint]
         else:
             self.moving = False
-            
-
-    def move(self, game_speed: float) -> None:
-        """ Method that moves the enemy towards the next waypoint. """
-
-        if self.moving:
-
-            if self.slowed:
-                self.slowed = self.check_if_slowed()
-
-            waypoint_distance: Vector2 = self.distance_to_waypoint()
-            movement = waypoint_distance.normalize() * self.speed * game_speed
-
-            if (waypoint_distance == movement or
-               waypoint_distance.length_squared() < movement.length_squared()):
-                self.position = self.target
-                self.set_to_next_waypoint()
-            else:
-                self.position = self.position + movement
 
     def apply_slow(self, slow_timer) -> None:
         """ Applies a slow tot the target. """
@@ -158,3 +157,6 @@ class Enemy():
             return False
 
         return True
+
+    def __str__(self) -> str:
+        return f"Enemy at position: {self.position}"
