@@ -80,9 +80,7 @@ class Tower(Cell):
             for enemy in self.enemy_list:
                 if (self.distance_to_target(enemy) <= shortest_distance
                    and enemy.get_projected_damage() > 0):
-                    target = enemy
-                    print(f"!!!!! {enemy} distance:{self.distance_to_target(enemy)}")
-                    
+                    target = enemy                    
         else:
             waypoint = 0
 
@@ -93,7 +91,7 @@ class Tower(Cell):
                     
                     target = enemy
                     waypoint = enemy.get_waypoint()
-                    
+ 
         self.target = target
 
         return True if self.target is not None else False

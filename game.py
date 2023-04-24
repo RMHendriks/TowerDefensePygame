@@ -2,7 +2,11 @@ import pygame
 import sys
 from pygame.math import Vector2
 from level import Level
-from ui.button import Button
+from ui.menus.menu import Menu
+from ui.menus.menumain import MenuMain
+from ui.menus.menucampain import MenuCampain
+from ui.menus.menuendless import MenuEndless
+from ui.menus.menuoptions import MenuOptions
 
 class Game():
     """ Class that holds the game and menus. """
@@ -14,17 +18,9 @@ class Game():
         self.screen_height = screen_height
         self.speed = speed
         self.state = "menu"
-        self.main_menu_buttons = [Button(Vector2(300, 250),"menu",
-                                         text="Play Campain"),
-                                  Button(Vector2(300, 350), "endless",
-                                         text="Play Endless"),
-                                  Button(Vector2(300, 450), "menu",
-                                         text="Options"),
-                                  Button(Vector2(300, 550), "quit",
-                                         width=100, height=50, text="Exit")]
-        self.cell_size_list = (5, 10, 15, 20, 30, 40, 50, 60, 100)
-        
-        self.logo = pygame.image.load('sprites/logo.png').convert_alpha()
+        self.menu = MenuMain() 
+        self.state_menus = ("menu", "campain", "endless", "options", "quit",
+                            "endless_start")      
            
     def run(self, window: pygame.surface.Surface):
         """ Main game loop. """
@@ -37,12 +33,15 @@ class Game():
                 case "menu":
                     self.run_menu(window)
                 case "campain":
-                    pass
+                    self.run_menu(window)
                 case "endless":
+                    self.run_menu(window)
+                case "endless_start":
                     self.run_level(window)
                     self.state = "menu"
+                    self.menu = MenuMain()
                 case "options":
-                    pass
+                    self.run_menu(window)
                 case "quit":
                     pygame.quit()
                     sys.exit()
@@ -57,27 +56,46 @@ class Game():
                 pygame.quit()
                 sys.exit()
                 
-            if self.state == "menu":
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for button in self.main_menu_buttons:
-                            if button.clicked():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    for button in self.menu.buttons:
+                        if button.clicked():
+                            if button.state in self.state_menus:
                                 self.state = button.state
+                            self.switch_menu(button.state)
 
     def run_menu(self, window: pygame.surface.Surface):
         """ Run the menu screen. """
-        window.fill(pygame.Color("white"))
-        for button in self.main_menu_buttons:
-            button.draw(window)
-            
-        # TODO replace this with something permanent
-        logo_center =  self.logo.get_rect().center
-        window.blit(self.logo, [300 - logo_center[0], 125 - logo_center[1]])
-            
+
+        self.menu.draw(window)
+        
+    def switch_menu(self, state: str) -> None:
+        """ Switches the menu screen after a button press. """
+
+        match state:
+            case "menu":
+                self.menu = MenuMain()
+            case "campain":
+                self.menu = MenuCampain()
+            case "endless":
+                self.menu = MenuEndless()
+            case "options":
+                self.menu = MenuOptions()
+            case "quit":
+                pass
+            case _:
+                self.menu.update(state)
+        
     def run_level(self, window: pygame.surface.Surface):
         """ Initiate a level. """
         
-        level = Level(self.screen_width, self.screen_height, 30, 0.05, 10)
-        level.run(window)
+        if isinstance(self.menu, MenuEndless):
+            cell_size = self.menu.cell_size_list[self.menu.cell_index]
+            waves = int(self.menu.wave_count)
+            level = Level(self.screen_width, self.screen_height, 
+                          cell_size, 0.05, waves)
+            level.run(window)
+        else:
+            level = Level(self.screen_width, self.screen_height, 30, 0.05, 10)
         
     

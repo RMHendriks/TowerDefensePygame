@@ -23,6 +23,7 @@ class TowerTesla(Tower):
         if self.beam is not None:
             if self.beam.check_collision():
                 self.beam_active = False
+                self.beam = None
 
         if (self.beam_active is False and self.select_target()
            and isinstance(self.target, Enemy)):

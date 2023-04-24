@@ -53,5 +53,4 @@ class ProjectileBeam(Projectile):
            (self.target.position - self.position).magnitude() > self.range):
             return True
 
-
         return False
