@@ -7,11 +7,11 @@ from projectiles.projectile import Projectile
 class ProjectileBeam(Projectile):
     """"" Class that contains the beam from the tesla tower. """""
 
-    def __init__(self, position: Vector2, size: int, target: Enemy, range: int) -> None:
-        super().__init__(position, size, target)
+    def __init__(self, tower: object, position: Vector2, size: int, target: Enemy) -> None:
+        super().__init__(tower, position, size, target)
 
         self.radius = size // 8
-        self.range = range
+        self.range = tower.range
         self.color = pygame.Color("yellow")
 
         # damage ticks
@@ -31,10 +31,12 @@ class ProjectileBeam(Projectile):
         """ Makes the energy of the beam move
         and deals tick damage as result. """
 
-        if (self.target.get_projected_damage() < 0 and
-           not isinstance(self.target, EnemyPriest)):
-            del self
-        elif (pygame.time.get_ticks() - self.cooldown_timer > 
+        # TODO add game speed to damage
+        # if (self.target.get_projected_damage() <= 0 and
+        #    not isinstance(self.target, EnemyPriest)):
+        #     self.tower.beam = []
+
+        if (pygame.time.get_ticks() - self.cooldown_timer > 
               self.damage_tick_timer):
 
             self.cooldown_timer = pygame.time.get_ticks()

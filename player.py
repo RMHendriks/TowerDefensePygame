@@ -4,7 +4,7 @@ class Player():
     def __init__(self) -> None:
 
         self.score = 0
-        self.gold = 200
+        self.gold = 1200
         self.lives = 3
 
     def increment_score(self, increment) -> None:

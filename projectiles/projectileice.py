@@ -4,11 +4,12 @@ from pygame.math import Vector2
 from enemies.enemy import Enemy
 from projectiles.projectile import Projectile
 
+
 class ProjectileIce(Projectile):
     """ Class for projectile behaviour """
 
-    def __init__(self, position: Vector2, size: int, target: Enemy) -> None:
-        super().__init__(position, size, target)
+    def __init__(self, tower: object, position: Vector2, size: int, target: Enemy) -> None:
+        super().__init__(tower, position, size, target)
 
         self.radius = size / 3.5
         self.color = pygame.Color("dodgerblue4")
@@ -17,7 +18,7 @@ class ProjectileIce(Projectile):
         self.damage = 2
         self.speed = 1.0
         self.start_speed = self.speed
-        self.max_speed = 2.5
+        self.max_speed = 3.5
         self.slow_time = 2000
 
     def draw(self, window: pygame.surface.Surface) -> None:

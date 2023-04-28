@@ -5,8 +5,9 @@ from enemies.enemy import Enemy
 class Projectile():
     """ Class for projectile behaviour """
 
-    def __init__(self, position: Vector2, size: int, target: Enemy) -> None:
+    def __init__(self, tower: object, position: Vector2, size: int, target: Enemy) -> None:
 
+        self.tower = tower
         self.position = position
         self.radius = size / 6
         self.color = pygame.Color("yellow")

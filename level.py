@@ -8,13 +8,11 @@ from towers.tower import Tower
 from towers.towerlight import TowerLight
 from towers.towerice import TowerIce
 from towers.towertesla import TowerTesla
+from towers.towershockwave import TowerShockwave
 from player import Player
 from enemy_wave import EnemyWave
 from enemies.enemy import Enemy
 from projectiles.projectile import Projectile
-from projectiles.projectileorb import ProjectileOrb
-from projectiles.projectileice import ProjectileIce
-from projectiles.projectilebeam import ProjectileBeam
 
 
 class Level():
@@ -71,9 +69,6 @@ class Level():
             
             self.update()
             self.draw(window)
-            
-            if self.player.get_lives() <= 0:
-                self.game_running = False
 
             # update screen
             pygame.display.update()
@@ -104,6 +99,8 @@ class Level():
                         self.buy_tower(TowerIce)
                     elif event.button == 3:
                         self.buy_tower(TowerTesla)
+                    elif event.button == 7:
+                        self.buy_tower(TowerShockwave)
 
     def update(self) -> None:
         """ Updates the game. """
@@ -116,6 +113,10 @@ class Level():
         self.shoot_tower_projectile()
         self.update_enemy()
         self.update_projectile()
+        
+        # quits the game if the player has no lives left
+        if self.player.get_lives() <= 0:
+            self.game_running = False
     
     def draw(self, window: pygame.surface.Surface) -> None:
         """ Draws the level. """
@@ -158,15 +159,15 @@ class Level():
         
     def initialize_grid(self) -> list[list[Cell]]:
         """ Creates the grid for the level. Returns the grid. """
-        
+
         grid: list[list[Cell]] = []
-        
+
         for x_count, x_cell in enumerate(range(1, self.screen_width, self.cell_size)):
 
             grid.append([])
             for y_cell in range(1, self.screen_height, self.cell_size):
                 grid[x_count].append(Cell(x_cell, y_cell, self.cell_size))
-                
+
         return grid
 
     # TODO implement a better algorithm
@@ -240,9 +241,9 @@ class Level():
         """" Makes towers shoot an projectile if possible. """
 
         for tower in self.tower_list:
-                if tower.shoot_cooldown() and self.enemy_list:
-                    self.projectile_list.append(tower.spawn_projectile())
-                    
+                if tower.ready_to_fire() and self.enemy_list:
+                    self.projectile_list.extend(tower.spawn_projectile())
+
     def update_enemy(self):
         """ Updates enemies. """
         

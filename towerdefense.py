@@ -9,9 +9,6 @@ STAT_MENU_SIZE = 50
 SPEED = 0.05
 TOTAL_WAVES = 30
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
 def main() -> None:
     pygame.init()
     window = pygame.display.set_mode((SCREEN_WIDTH,

@@ -13,3 +13,12 @@ class MenuCampain(Menu):
         
         self.buttons = [Button(Vector2(300, 550), "menu",
                                width=100, height=50, text="Back")]
+        
+        counter = 1
+        for y in range(200, 500, 100):
+            for x in range(100, 550, 100):
+                self.buttons.append(Button(Vector2(x, y), "menu", width=95,
+                                           height=95, text=str(counter)))
+                counter += 1
+
+    

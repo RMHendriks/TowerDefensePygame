@@ -2,6 +2,8 @@ import pygame
 from towers.tower import Tower
 from enemies.enemy import Enemy
 from projectiles.projectileorb import ProjectileOrb
+from towers.targetmodes.targetmodefurthest import TargetmodeFurthest
+
 
 class TowerLight(Tower):
     
@@ -13,14 +15,7 @@ class TowerLight(Tower):
         self.range = size * 5
         self.tower_cost = 100
         self.shooting_cooldown = 1000
-        self.closest_target_mode = False
-        
-    def spawn_projectile(self) -> ProjectileOrb:
-        """ Spawn a projectile ontop of the tower. """
 
-        if isinstance(self.target, Enemy):
-            projectile = ProjectileOrb(self.get_center_coord(),
-                                    self.size, self.target)
-            projectile.deal_projected_damage()
+        self.projectile = ProjectileOrb
 
-        return projectile
+        self.target_mode = TargetmodeFurthest(self)

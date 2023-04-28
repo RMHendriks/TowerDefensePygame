@@ -2,6 +2,7 @@ import pygame
 from towers.tower import Tower
 from enemies.enemy import Enemy
 from projectiles.projectileice import ProjectileIce
+from towers.targetmodes.targetmodefurthest import TargetmodeFurthest
 
 class TowerIce(Tower):
     
@@ -14,13 +15,7 @@ class TowerIce(Tower):
         self.tower_cost = 125
         self.shooting_cooldown = 2000
         self.closest_target_mode = False
-    
-    def spawn_projectile(self) -> ProjectileIce:
-        """ Spawn a projectile ontop of the tower. """
-
-        if isinstance(self.target, Enemy):
-            projectile = ProjectileIce(self.get_center_coord(),
-                                    self.size, self.target)
-            projectile.deal_projected_damage()
-
-        return projectile
+        
+        self.projectile = ProjectileIce
+        
+        self.target_mode = TargetmodeFurthest(self)
