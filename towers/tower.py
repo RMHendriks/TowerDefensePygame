@@ -18,7 +18,8 @@ class Tower(Cell):
         self.shooting_cooldown = 1000
         self.cooldown_timer = pygame.time.get_ticks()
         
-        self.projectile = Projectile
+        self.projectile_type = Projectile
+        self.projectile_list: list[Projectile] = []
 
         self.enemy_list = enemy_list
         self.target: list[Enemy] = []
@@ -37,6 +38,15 @@ class Tower(Cell):
         
         pygame.draw.circle(window, pygame.Color("black"), 
                            self.get_center_coord(), self.range, 1)
+
+    def update_projectiles(self, game_speed: float) -> None:
+        """ Updates the projectiles fired by this tower. """
+        
+        for projectile in self.projectile_list:
+            if isinstance(projectile, Projectile):
+                projectile.move(game_speed)
+                if projectile.check_if_projectile_ended():
+                    del self.projectile_list[self.projectile_list.index(projectile)]
 
     def get_tower_cost(self) -> int:
         """ Return the cost of the tower. """
@@ -64,16 +74,16 @@ class Tower(Cell):
 
         return self.target_mode.select_target()
 
-    def spawn_projectile(self) -> list[Projectile]:
+    def spawn_projectile(self) -> None:
         """ Spawn a projectile ontop of the tower. """
 
-        projectile_list = []
+        projectiles = []
         
         for x, enemy in enumerate(self.target):
             if isinstance(enemy, Enemy):
-                projectile = self.projectile(self, self.get_center_coord(),
+                projectile = self.projectile_type(self, self.get_center_coord(),
                                         self.size, self.target[x])
                 projectile.deal_projected_damage()
-                projectile_list.append(projectile)
+                projectiles.append(projectile)
 
-        return projectile_list
+        self.projectile_list.extend(projectiles)

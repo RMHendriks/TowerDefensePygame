@@ -4,6 +4,7 @@ from enemies.enemy import Enemy
 from projectiles.projectileice import ProjectileIce
 from towers.targetmodes.targetmodefurthest import TargetmodeFurthest
 
+
 class TowerIce(Tower):
     
     def __init__(self, x, y, size, enemy_list: list[Enemy]) -> None:
@@ -14,8 +15,7 @@ class TowerIce(Tower):
         self.range = size * 7
         self.tower_cost = 125
         self.shooting_cooldown = 2000
-        self.closest_target_mode = False
         
-        self.projectile = ProjectileIce
+        self.projectile_type = ProjectileIce
         
         self.target_mode = TargetmodeFurthest(self)

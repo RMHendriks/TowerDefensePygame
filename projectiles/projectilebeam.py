@@ -1,3 +1,10 @@
+# circular import prevention for type hinting
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from towers.tower import Tower
+
+# regular imports
 import pygame
 from pygame.math import Vector2
 from enemies.enemy import Enemy
@@ -7,7 +14,7 @@ from projectiles.projectile import Projectile
 class ProjectileBeam(Projectile):
     """"" Class that contains the beam from the tesla tower. """""
 
-    def __init__(self, tower: object, position: Vector2, size: int, target: Enemy) -> None:
+    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
         super().__init__(tower, position, size, target)
 
         self.radius = size // 8
@@ -47,7 +54,7 @@ class ProjectileBeam(Projectile):
             self.deal_projected_damage()
             self.deal_damage()
 
-    def check_collision(self) -> bool:
+    def check_if_projectile_ended(self) -> bool:
         """ Return True if the target is within the radius of the target.
         False if not. """
 

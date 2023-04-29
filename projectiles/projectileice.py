@@ -1,3 +1,10 @@
+# circular import prevention for type hinting
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from towers.tower import Tower
+
+# regular imports
 import pygame
 import math
 from pygame.math import Vector2
@@ -8,7 +15,7 @@ from projectiles.projectile import Projectile
 class ProjectileIce(Projectile):
     """ Class for projectile behaviour """
 
-    def __init__(self, tower: object, position: Vector2, size: int, target: Enemy) -> None:
+    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
         super().__init__(tower, position, size, target)
 
         self.radius = size / 3.5

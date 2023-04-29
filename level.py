@@ -1,4 +1,5 @@
 import pygame
+import sys
 import random
 from typing import List
 from pygame.math import Vector2
@@ -9,6 +10,7 @@ from towers.towerlight import TowerLight
 from towers.towerice import TowerIce
 from towers.towertesla import TowerTesla
 from towers.towershockwave import TowerShockwave
+from towers.towerzap import TowerZap
 from player import Player
 from enemy_wave import EnemyWave
 from enemies.enemy import Enemy
@@ -48,10 +50,7 @@ class Level():
 
         # initialise list for towers
         self.tower_list: List[Tower] = []
-        
-        # initialize list for projectiles
-        self.projectile_list: List[Projectile] = []
-        
+
     def run(self, window: pygame.surface.Surface) -> None:
         """ Method that runs the game loop of the level.
         Needs the game window as argument. """
@@ -78,7 +77,8 @@ class Level():
     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.game_running = False
+                pygame.quit()
+                sys.exit()
                 
             self.mouse_position = pygame.mouse.get_pos()
             self.mouse_x = self.mouse_position[0] // self.cell_size
@@ -99,6 +99,8 @@ class Level():
                         self.buy_tower(TowerIce)
                     elif event.button == 3:
                         self.buy_tower(TowerTesla)
+                    elif event.button == 6:
+                        self.buy_tower(TowerZap)
                     elif event.button == 7:
                         self.buy_tower(TowerShockwave)
 
@@ -131,8 +133,10 @@ class Level():
             enemy.draw(window, self.font)
 
         # draws the projectiles
-        for projectile in self.projectile_list:
-            projectile.draw(window)
+        for tower in self.tower_list:
+            for projectile in tower.projectile_list:
+                if isinstance(projectile, Projectile):
+                    projectile.draw(window)
             
         # draws range circles
         if isinstance(self.cell, Tower):
@@ -236,17 +240,17 @@ class Level():
                     self.enemy_list.append(enemy)
                 else:
                     del self.wave_list[0]
-                    
+
     def shoot_tower_projectile(self):
         """" Makes towers shoot an projectile if possible. """
 
         for tower in self.tower_list:
-                if tower.ready_to_fire() and self.enemy_list:
-                    self.projectile_list.extend(tower.spawn_projectile())
+            if tower.ready_to_fire() and self.enemy_list:
+                tower.spawn_projectile()
 
     def update_enemy(self):
         """ Updates enemies. """
-        
+
         for enemy in self.enemy_list:
             if enemy.check_if_dead():
                 self.player.increment_score(enemy.get_score_value())
@@ -258,15 +262,13 @@ class Level():
                 del self.enemy_list[self.enemy_list.index(enemy)]
                 continue
             enemy.move(self.game_speed)
-            
+
     def update_projectile(self):
         """ Updates projectiles. """
 
-        for projectile in self.projectile_list:
-                projectile.move(self.game_speed)
-                if projectile.check_collision():
-                    del self.projectile_list[self.projectile_list.index(projectile)]
-                    
+        for tower in self.tower_list:
+            tower.update_projectiles(self.game_speed)
+
     def render_hud(self, window: pygame.surface.Surface) -> None:
         """ Render the hud at the bottom of the screen. """
         

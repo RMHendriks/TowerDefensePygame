@@ -1,3 +1,10 @@
+# circular import prevention for type hinting
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from towers.tower import Tower
+
+# regular imports
 import pygame
 from pygame.math import Vector2
 from enemies.enemy import Enemy
@@ -5,7 +12,7 @@ from enemies.enemy import Enemy
 class Projectile():
     """ Class for projectile behaviour """
 
-    def __init__(self, tower: object, position: Vector2, size: int, target: Enemy) -> None:
+    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
 
         self.tower = tower
         self.position = position
@@ -50,13 +57,21 @@ class Projectile():
         """ Deal projected damage to the enemy target. """
 
         self.target.receive_projected_damage(self.damage)
-
+        
     def check_collision(self) -> bool:
+        """ Checks if the projectile has hit a target. """
+        
+        if self.magnitude < self.target.get_radius():
+            self.deal_damage()
+            return True
+
+        return False
+
+    def check_if_projectile_ended(self) -> bool:
         """ Return True if the target is within the radius of the target.
         False if not. """
 
-        if self.magnitude < self.target.get_radius():
-            self.deal_damage()
+        if self.check_collision():
             return True
 
         return False

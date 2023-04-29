@@ -2,10 +2,11 @@ import pygame
 from towers.tower import Tower
 from enemies.enemy import Enemy
 from projectiles.projectileshockwave import ProjectileShockwave
-from towers.targetmodes.targetmodeany import TargetmodeAny
+from towers.targetmodes.targetmodeclosest import TargetmodeClosest
+
 
 class TowerShockwave(Tower):
-    
+
     def __init__(self, x, y, size, enemy_list: list[Enemy]) -> None:
         super().__init__(x, y, size, enemy_list)
 
@@ -13,22 +14,21 @@ class TowerShockwave(Tower):
         self.inner_color = pygame.Color("black")
         self.range = size * 3
         self.tower_cost = 75
-        self.shooting_cooldown = 1000
-        self.projectile_amount = 8
+        self.shooting_cooldown = 3000
 
-        self.projectile = ProjectileShockwave
-        
-        self.target_mode = TargetmodeAny(self)
-        
-    def spawn_projectile(self) -> ProjectileShockwave:
+        self.projectile_type = ProjectileShockwave
+
+        self.target_mode = TargetmodeClosest(self)
+
+    def spawn_projectile(self) -> None:
         """ Spawn a projectile ontop of the tower. """
 
-        projectile_list = []
-
-        for projectiles in range(self.projectile_amount):
+        projectiles = []
         
-            projectile = self.projectile(self, self.get_center_coord(),
-                                         self.size, self.enemy_list)
-            projectile_list.append(projectile)
+        for x, enemy in enumerate(self.target):
+            if isinstance(enemy, Enemy):
+                projectile = self.projectile_type(self, self.get_center_coord(),
+                                        self.size, self.target[x])
+                projectiles.append(projectile)
 
-        return projectile_list
+        self.projectile_list.extend(projectiles)

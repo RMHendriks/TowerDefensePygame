@@ -15,9 +15,9 @@ class TowerTesla(Tower):
         self.range = size * 5
         self.tower_cost = 75
         self.beam_active = False
-        self.beam: list[ProjectileBeam] = []
+        self.projectile_list: list[ProjectileBeam] = []
         
-        self.projectile = ProjectileBeam
+        self.projectile_type = ProjectileBeam
         
         self.target_mode = TargetmodeClosest(self)
 
@@ -25,10 +25,12 @@ class TowerTesla(Tower):
     def ready_to_fire(self) -> bool:
         """ Checks if the tower has a beam and returns True or False. """
 
-        if len(self.beam) > 0:
-            if self.beam[0].check_collision():
+        if len(self.projectile_list) > 0:
+            if self.projectile_list[0].check_if_projectile_ended():
                 self.beam_active = False
-                self.beam = []
+                self.projectile_list = []
+        elif len(self.projectile_list) == 0:
+            self.beam_active = False
 
         if (self.beam_active is False and self.select_target()
            and len(self.target) > 0):
@@ -37,19 +39,17 @@ class TowerTesla(Tower):
         
         return False
         
-    def spawn_projectile(self) -> ProjectileBeam:
+    def spawn_projectile(self) -> None:
         """ Spawn a projectile ontop of the tower. """
 
-        projectile_list = []
+        projectiles = []
         
         for x, enemy in enumerate(self.target):
             if isinstance(enemy, Enemy):
-                projectile = self.projectile(self, self.get_center_coord(),
+                projectile = self.projectile_type(self, self.get_center_coord(),
                                              self.size, self.target[x])
                 projectile.deal_projected_damage()
-                projectile_list.append(projectile)
+                projectiles.append(projectile)
                 self.beam_active = True
 
-        self.beam = projectile_list
-
-        return projectile_list
+        self.projectile_list = projectiles
