@@ -31,6 +31,7 @@ class EnemyWave():
         # cooldown timers
         self.cooldown_timer = pygame.time.get_ticks()
         self.spawn_cooldown = 5000
+        self.min_spawn_cooldown = 750
 
     def initialize_wave(self) -> list[Enemy]:
         """ Initialize a wave of enemies of a random size. """
@@ -70,10 +71,19 @@ class EnemyWave():
         if pygame.time.get_ticks() - self.cooldown_timer > self.spawn_cooldown:
 
             self.cooldown_timer = pygame.time.get_ticks()
-            self.spawn_cooldown = random.randrange(2000, 5000) // self.wave_level
+            self.spawn_cooldown = random.randrange((self.calculate_spawn_timer() // 5),
+                                                   self.calculate_spawn_timer())
+            print(self.spawn_cooldown)
             return True
 
         return False
+
+    def calculate_spawn_timer(self) -> int:
+        """ Calculate the spawn timer between enemies """
+        
+        timer = int(5000 - self.wave_level ** (self.wave_level / 2)) 
+        
+        return timer if timer > self.min_spawn_cooldown else self.min_spawn_cooldown
     
     def __str__(self):
         """ Return the wave number. """

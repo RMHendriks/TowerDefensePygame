@@ -3,8 +3,11 @@ import sys
 import random
 from typing import List
 from pygame.math import Vector2
+from userinput.userinputhandler import UserInputHandler
+from userinput.userinputhandlerpc import UserInputHandlerPC
 from cells.cell import Cell
-from cells.road import Road
+from cells.cellroad import CellRoad
+from road import Road
 from towers.tower import Tower
 from towers.towerlight import TowerLight
 from towers.towerice import TowerIce
@@ -31,6 +34,9 @@ class Level():
         self.font = pygame.font.SysFont('agencyfb', 25)
         self.cell = Cell(0, 0, cell_size)
         
+        # initialise user input controls
+        self.user_input_handler: UserInputHandler = UserInputHandlerPC()
+
         # initialise the player
         self.player = Player()
         
@@ -41,7 +47,9 @@ class Level():
         self.image2 = pygame.image.load('sprites/tower2.png').convert_alpha()
         
         # Initialise road 
-        self.road_list: List[Vector2] = self.draw_path()
+        self.road = Road()
+        self.road_list: List[Vector2] = self.road.draw_path(self.grid,
+                                                            self.cell_size)
         
         # initialise enemies
         # TODO improve the wave system
@@ -64,45 +72,13 @@ class Level():
             window.fill(pygame.Color("black"))
 
             # check for events
-            self.event_handler(window)
+            self.user_input_handler.event_handler(self)
             
             self.update()
             self.draw(window)
 
             # update screen
             pygame.display.update()
-            
-    def event_handler(self, window: pygame.surface.Surface) -> None:
-        """ Method that handles events. No return value. """
-    
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-                
-            self.mouse_position = pygame.mouse.get_pos()
-            self.mouse_x = self.mouse_position[0] // self.cell_size
-            self.mouse_y = self.mouse_position[1] // self.cell_size
-                        
-            if (self.mouse_position[1] >= self.screen_height - 2 or
-               self.mouse_position[0] >= self.screen_width - 2):
-                return
-            
-            self.cell = self.grid[self.mouse_x][self.mouse_y]
-                
-            if (self.cell.interacted(self.mouse_position)):
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        self.buy_tower(TowerLight)
-                    elif event.button == 2:
-                        self.buy_tower(TowerIce)
-                    elif event.button == 3:
-                        self.buy_tower(TowerTesla)
-                    elif event.button == 6:
-                        self.buy_tower(TowerZap)
-                    elif event.button == 7:
-                        self.buy_tower(TowerShockwave)
 
     def update(self) -> None:
         """ Updates the game. """
@@ -150,7 +126,7 @@ class Level():
         and creates a tower object at the mouse location. Else return False"""
         
         if (self.cell.interacted(self.mouse_position) and
-           not isinstance(self.cell, (Road, Tower))):
+           not isinstance(self.cell, (CellRoad, Tower))):
 
             tower = towertype(self.cell.position.x, self.cell.position.y,
                               self.cell_size, self.enemy_list)
@@ -173,50 +149,6 @@ class Level():
                 grid[x_count].append(Cell(x_cell, y_cell, self.cell_size))
 
         return grid
-
-    # TODO implement a better algorithm
-    def draw_path(self) -> list[Vector2]:
-        """Function that creates a path through the grid.
-        Returns a list of Vector2 coordinates of the center of each
-        road tile, in order."""
-        
-        y = random.randint(1, len(self.grid) - 1)
-        x = 0
-        low_y = 2
-        high_y = len(self.grid) - 3
-
-        self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
-        road_list = [self.grid[x][y].get_center_coord()]
-
-        while x < len(self.grid[0]) - 1:
-
-            match random.randint(0, 2):
-                case 0:
-                    if isinstance(self.grid[x + 1][y], Road):
-                        continue
-                    x += 1
-                    self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
-                    road_list.append(self.grid[x][y].get_center_coord())
-                case 1:
-                    if y > high_y:
-                        continue
-                    if (isinstance(self.grid[x][y + 1], Road) or
-                    isinstance(self.grid[x - 1][y + 1], Road)):
-                        continue
-                    y += 1
-                    self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
-                    road_list.append(self.grid[x][y].get_center_coord())
-                case 2:
-                    if y < low_y:
-                        continue
-                    if (isinstance(self.grid[x][y - 1], Road) or
-                    isinstance(self.grid[x - 1][y - 1], Road)):
-                        continue
-                    y -= 1
-                    self.grid[x][y] = Road(self.grid[x][y].position.x, self.grid[x][y].position.y, self.cell_size)
-                    road_list.append(self.grid[x][y].get_center_coord())
-
-        return road_list
     
     def generate_waves(self, total_waves: int) -> list[EnemyWave]:
         """ Method that initializes the waves for the level. """
