@@ -41,5 +41,5 @@ class Cell():
         """ Return a string that contains the position of the cell,
         relative to the other cells on the screen. """
 
-        return (f"Cell, X:{self.position.x // self.size}, "  
-                "Y:{self.position.y // self.size}")
+        return (f"Cell: X:{int(self.position.x // self.size)}, "  
+                f"Y:{int(self.position.y // self.size)}")
