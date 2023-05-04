@@ -10,12 +10,17 @@ class TowerTesla(Tower):
     def __init__(self, x, y, size, enemy_list: list[Enemy]) -> None:
         super().__init__(x, y, size, enemy_list)
 
+        self.name = "Tower Tesla"
         self.color = pygame.Color("sienna2")
         self.inner_color = pygame.Color("gray42")
         self.range = size * 5
         self.tower_cost = 75
         self.beam_active = False
         self.projectile_list: list[ProjectileBeam] = []
+        
+        self.damage = 0.05
+        self.speed = 2.0
+        self.max_speed = 2.5
         
         self.projectile_type = ProjectileBeam
         
@@ -47,7 +52,9 @@ class TowerTesla(Tower):
         for x, enemy in enumerate(self.target):
             if isinstance(enemy, Enemy):
                 projectile = self.projectile_type(self, self.get_center_coord(),
-                                             self.size, self.target[x])
+                                                  self.size, self.target[x],
+                                                  self.damage, self.speed,
+                                                  self.max_speed)
                 projectile.deal_projected_damage()
                 projectiles.append(projectile)
                 self.beam_active = True

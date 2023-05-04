@@ -13,8 +13,9 @@ from projectiles.projectile import Projectile
 class ProjectileZap(Projectile):
     """ Class for projectile behaviour """
 
-    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
-        super().__init__(tower, position, size, target)
+    def __init__(self, tower: Tower, position: Vector2, size: int,target: Enemy,
+                 damage: int, speed: float, max_speed: float) -> None:
+        super().__init__(tower, position, size, target, damage, speed, max_speed)
 
         self.radius = size / 6
         self.color = pygame.Color("darkorchid1")
@@ -24,10 +25,6 @@ class ProjectileZap(Projectile):
         self.enemy_hit_list: list[Enemy] = [self.target]
 
         # projectile attributes
-        self.damage = 2
-        self.speed = 3.5
-        self.start_speed = self.speed
-        self.max_speed = 4.0
         self.projectile_range = self.tower.range / 2
         
     def draw(self, window) -> None:

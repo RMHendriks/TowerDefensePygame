@@ -8,12 +8,14 @@ import pygame
 import sys
 from cells.cell import Cell
 from userinput.userinputhandler import UserInputHandler
+from towers.tower import Tower
 from towers.towerlight import TowerLight
 from towers.towerice import TowerIce
 from towers.towertesla import TowerTesla
 from towers.towershockwave import TowerShockwave
 from towers.towerzap import TowerZap
 from towers.towersniper import TowerSniper
+from ui.tooltiptower import ToolTipTower
 
 class UserInputHandlerPC(UserInputHandler):
 
@@ -35,6 +37,13 @@ class UserInputHandlerPC(UserInputHandler):
 
             if cell is not None:
                 level.cell = cell
+
+                if isinstance(cell, Tower):
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            level.tool_tip = ToolTipTower(cell, level.cell_size)
+                elif level.tool_tip is not None:
+                    level.tool_tip.hidden = True
 
             if (level.cell.interacted(mouse_position)):
 

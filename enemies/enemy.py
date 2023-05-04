@@ -159,4 +159,4 @@ class Enemy():
         return True
 
     def __str__(self) -> str:
-        return f"Enemy at position: {self.position}"
+        return f"Type: \nHealth: {self.health}\nSpeed: {self.speed}"

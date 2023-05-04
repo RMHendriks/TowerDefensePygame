@@ -14,8 +14,9 @@ from projectiles.projectile import Projectile
 class ProjectileBeam(Projectile):
     """"" Class that contains the beam from the tesla tower. """""
 
-    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
-        super().__init__(tower, position, size, target)
+    def __init__(self, tower: Tower, position: Vector2, size: int,target: Enemy,
+                 damage: int, speed: float, max_speed: float) -> None:
+        super().__init__(tower, position, size, target, damage, speed, max_speed)
 
         self.radius = size // 8
         self.range = tower.range
@@ -26,7 +27,6 @@ class ProjectileBeam(Projectile):
         self.cooldown_timer = pygame.time.get_ticks() - self.damage_tick_timer
 
         # projectile attributes
-        self.damage = 0.05
         self.max_damage = 2
 
     def draw(self, window) -> None:

@@ -12,7 +12,8 @@ from enemies.enemy import Enemy
 class Projectile():
     """ Class for projectile behaviour """
 
-    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
+    def __init__(self, tower: Tower, position: Vector2, size: int,target: Enemy,
+                 damage: int, speed: float, max_speed: float) -> None:
 
         self.tower = tower
         self.position = position
@@ -23,10 +24,10 @@ class Projectile():
         self.target = target
 
         # projectile attributes
-        self.damage = 3
-        self.speed = 2.0
+        self.damage = damage
+        self.speed = speed
         self.start_speed = self.speed
-        self.max_speed = 2.5
+        self.max_speed = max_speed
 
     def draw(self, window) -> None:
         """ Draws the projectile to the screen. """

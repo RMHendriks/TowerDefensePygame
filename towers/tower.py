@@ -11,12 +11,17 @@ class Tower(Cell):
     def __init__(self, x, y, size, enemy_list: list[Enemy]) -> None:
         super().__init__(x, y, size)
 
+        self.name = "Tower"
         self.color = pygame.Color("red")
         self.inner_color = pygame.Color("black")
         self.range = size * 5
         self.tower_cost = 100
         self.shooting_cooldown = 1000
         self.cooldown_timer = pygame.time.get_ticks()
+        
+        self.damage = 3
+        self.speed = 2.0
+        self.max_speed = 2.5
         
         self.projectile_type = Projectile
         self.projectile_list: list[Projectile] = []
@@ -69,7 +74,7 @@ class Tower(Cell):
 
         return abs((enemy.position - self.position).magnitude())
 
-    def select_target(self) -> bool:
+    def select_target(self) -> list[Enemy]:
         """ Selects are target within range and returns True if an enemy. """
 
         return self.target_mode.select_target()
@@ -82,8 +87,13 @@ class Tower(Cell):
         for x, enemy in enumerate(self.target):
             if isinstance(enemy, Enemy):
                 projectile = self.projectile_type(self, self.get_center_coord(),
-                                        self.size, self.target[x])
+                                                  self.size, self.target[x],
+                                                  self.damage, self.speed,
+                                                  self.max_speed)
                 projectile.deal_projected_damage()
                 projectiles.append(projectile)
 
         self.projectile_list.extend(projectiles)
+
+    def __str__(self) -> str:
+        return self.name

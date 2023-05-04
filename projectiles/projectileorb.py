@@ -13,14 +13,9 @@ from projectiles.projectile import Projectile
 class ProjectileOrb(Projectile):
     """ Class for projectile behaviour """
 
-    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
-        super().__init__(tower, position, size, target)
+    def __init__(self, tower: Tower, position: Vector2, size: int,target: Enemy,
+                 damage: int, speed: float, max_speed: float) -> None:
+        super().__init__(tower, position, size, target, damage, speed, max_speed)
 
         self.radius = size / 6
         self.color = pygame.Color("yellow")
-
-        # projectile attributes
-        self.damage = 3
-        self.speed = 2.0
-        self.start_speed = self.speed
-        self.max_speed = 2.5

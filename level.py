@@ -12,12 +12,13 @@ from player import Player
 from enemyspawnmanager import EnemySpawnManager
 from enemies.enemy import Enemy
 from projectiles.projectile import Projectile
+from ui.hud import HUD
 
 
 class Level():
     """ Class that initalizes and holds all level data. """
 
-    def __init__(self, screen_width: int, screen_height: int, cell_size: int, speed: float, total_waves: int) -> None:
+    def __init__(self, screen_width: int, screen_height: int, cell_size: int, speed: float, num_waves: int) -> None:
 
         self.game_running = True
         self.screen_width = screen_width
@@ -27,6 +28,7 @@ class Level():
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont('agencyfb', 25)
         self.cell = Cell(0, 0, cell_size)
+        self.tool_tip = None
 
         # initialise user input controls
         self.user_input_handler: UserInputHandler = UserInputHandlerPC()
@@ -36,9 +38,6 @@ class Level():
 
         # initialise grid
         self.grid = Grid(self.cell_size, screen_width, self.screen_height)
-
-        self.image = pygame.image.load('sprites/tower1.png').convert_alpha()
-        self.image2 = pygame.image.load('sprites/tower2.png').convert_alpha()
 
         # Initialise road 
         self.road = Road()
@@ -51,7 +50,7 @@ class Level():
         self.enemy_spawn_manager = EnemySpawnManager(self.cell_size,
                                                      self.road_list,
                                                      self.enemy_list,
-                                                     total_waves)
+                                                     num_waves)
 
         # initialise list for towers
         self.tower_list: List[Tower] = []
@@ -60,6 +59,10 @@ class Level():
         self.tower_manager = TowerManager(self.cell_size, self.grid,
                                           self.tower_list, self.enemy_list,
                                           self.player)
+        
+        # initialize HUD
+        self.hud = HUD(self.screen_width, self.screen_height, self.player,
+                       self.enemy_spawn_manager)
 
     def run(self, window: pygame.surface.Surface) -> None:
         """ Method that runs the game loop of the level.
@@ -120,7 +123,10 @@ class Level():
                 self.cell.hover_draw(window)
 
         # draws the hud
-        self.render_hud(window)
+        self.hud.render_hud(window)
+        
+        if self.tool_tip is not None:
+            self.tool_tip.draw(window)
 
     def shoot_tower_projectiles(self) -> None:
         """ Makes towers shoot a projectile if possible. """
@@ -149,27 +155,3 @@ class Level():
 
         for tower in self.tower_list:
             tower.update_projectiles(self.game_speed)
-
-    def render_hud(self, window: pygame.surface.Surface) -> None:
-        """ Render the hud at the bottom of the screen. """
-        
-        score_text = self.font.render("Score: " + str(self.player.get_score()),
-                                      True, pygame.Color("white"))
-        window.blit(score_text, [10, self.screen_height + 10])
-        
-        wave_str = self.enemy_spawn_manager.wave_list[0] if self.enemy_spawn_manager.wave_list else "Done!"
-        
-        wave_text = self.font.render((str(wave_str)), 
-                                     True, pygame.Color("white"))
-        window.blit(wave_text, [self.screen_width / 2 - 25, self.screen_height + 10])
-
-        gold_text = self.font.render("Gold: " + str(round(self.player.get_gold())),
-                                     True, pygame.Color("white"))
-        window.blit(gold_text, [self.screen_width / 4, self.screen_height + 10])
-
-        lives_text = self.font.render("Lives: " + str(round(self.player.get_lives())),
-                                     True, pygame.Color("white"))
-        window.blit(lives_text, [self.screen_width / 1.5, self.screen_height + 10])
-        
-        window.blit(self.image, [self.screen_width - 64, self.screen_height + 10])
-        window.blit(self.image2, [self.screen_width - 32, self.screen_height + 10])

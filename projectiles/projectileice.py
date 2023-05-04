@@ -15,17 +15,13 @@ from projectiles.projectile import Projectile
 class ProjectileIce(Projectile):
     """ Class for projectile behaviour """
 
-    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy) -> None:
-        super().__init__(tower, position, size, target)
+    def __init__(self, tower: Tower, position: Vector2, size: int,target: Enemy,
+                 damage: int, speed: float, max_speed: float) -> None:
+        super().__init__(tower, position, size, target, damage, speed, max_speed)
 
         self.radius = size / 3.5
         self.color = pygame.Color("dodgerblue4")
 
-        # projectile attributes
-        self.damage = 2
-        self.speed = 1.0
-        self.start_speed = self.speed
-        self.max_speed = 3.5
         self.slow_time = 2000
 
     def draw(self, window: pygame.surface.Surface) -> None:
