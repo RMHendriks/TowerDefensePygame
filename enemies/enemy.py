@@ -41,15 +41,16 @@ class Enemy():
         # TODO render the healthbar after all enemies have been rendered
         # display healthbar
         if self.health != self.max_health:
-            health_bar_position = [self.position.x - self.cell_size // 3,
-                                self.position.y - self.cell_size // 2,
-                                self.cell_size // 1.5, self.cell_size // 10]
+            health_bar_position = [int(self.position.x - self.cell_size // 3),
+                                   int(self.position.y - self.cell_size // 2),
+                                   int(self.cell_size // 1.5),
+                                   int(self.cell_size // 10)]
             
             pygame.draw.rect(window, pygame.Color("red"), health_bar_position)
             
             # display current health on healthbar
-            health_bar_position[2] = self.cell_size // 1.5 * (self.health /
-                                                            self.max_health)
+            health_bar_position[2] = int(self.cell_size // 1.5 * (self.health /
+                                         self.max_health))
             
             pygame.draw.rect(window, pygame.Color("green"), health_bar_position)
 

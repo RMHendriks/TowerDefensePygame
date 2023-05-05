@@ -16,5 +16,5 @@ class Targetmode():
         self.tower = tower
         
     @abstractmethod
-    def select_target(self) -> list[Enemy]:
+    def select_target(self) -> bool:
         pass

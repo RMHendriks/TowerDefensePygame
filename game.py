@@ -20,7 +20,7 @@ class Game():
         self.screen_height = screen_height
         self.speed = speed
         self.state = "menu"
-        self.menu = MenuMain() 
+        self.menu: Menu = MenuMain() 
         self.state_menus = ("menu", "campain", "endless", "options", "quit",
                             "endless_start")      
            
@@ -57,7 +57,7 @@ class Game():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-                
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for button in self.menu.buttons:
@@ -70,7 +70,7 @@ class Game():
         """ Run the menu screen. """
 
         self.menu.draw(window)
-        
+
     def switch_menu(self, state: str) -> None:
         """ Switches the menu screen after a button press. """
 
@@ -87,17 +87,15 @@ class Game():
                 pass
             case _:
                 self.menu.update(state)
-        
+
     def run_level(self, window: pygame.surface.Surface):
         """ Initiate a level. """
-        
+
         if isinstance(self.menu, MenuEndless):
             cell_size = self.menu.cell_size_list[self.menu.cell_index]
             waves = int(self.menu.wave_count)
             level = Level(self.screen_width, self.screen_height, 
-                          cell_size, 0.05, waves)
+                          cell_size, self.speed, waves)
             level.run(window)
         else:
             level = Level(self.screen_width, self.screen_height, 30, 0.05, 10)
-        
-    

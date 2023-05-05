@@ -33,12 +33,11 @@ class UserInputHandlerPC(UserInputHandler):
                 sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.level.game_running = False
-                return
 
             self.mouse_position = pygame.mouse.get_pos()
 
             cell: Cell = self.level.grid.get_cell(self.mouse_position[0], 
-                                             self.mouse_position[1])
+                                                  self.mouse_position[1])
 
             if cell is not None:
                 self.level.cell = cell

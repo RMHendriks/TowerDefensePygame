@@ -28,7 +28,7 @@ class Tower(Cell):
 
         self.enemy_list = enemy_list
         self.target: list[Enemy] = []
-        self.target_mode = Targetmode(self)
+        self.target_mode: Targetmode
 
     def draw(self, window) -> None:
         """ Draws the tower to the screen. """
@@ -74,7 +74,7 @@ class Tower(Cell):
 
         return abs((enemy.position - self.position).magnitude())
 
-    def select_target(self) -> list[Enemy]:
+    def select_target(self) -> bool:
         """ Selects are target within range and returns True if an enemy. """
 
         return self.target_mode.select_target()

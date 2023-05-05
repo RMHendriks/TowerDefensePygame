@@ -29,12 +29,13 @@ class ProjectileBeam(Projectile):
         # projectile attributes
         self.max_damage = 30
         self.damage_incrementer = 1.18
-        self.no_game_speed_damage = self.damage
+        self.no_game_speed_damage = float(self.damage)
 
     def draw(self, window) -> None:
         """ Draws the projectile to the screen. """
 
-        pygame.draw.line(window, self.color, self.position, self.target.position, width=self.radius)
+        pygame.draw.line(window, self.color, self.position,
+                         self.target.position, width=int(self.radius))
 
     def move(self, game_speed: float) -> None:
         """ Makes the energy of the beam move

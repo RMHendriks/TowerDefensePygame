@@ -2,6 +2,7 @@ from towers.targetmodes.targetmode import Targetmode
 from enemies.enemy import Enemy
 from towers.tower import Tower
 
+
 class TargetmodeFurthest(Targetmode):
     """ Class that decides what target to select.
     Only selects a single target furthest on the road within range. """
@@ -9,7 +10,7 @@ class TargetmodeFurthest(Targetmode):
     def __init__(self, tower: Tower) -> None:
         super().__init__(tower)
                 
-    def select_target(self) -> list[Enemy]:
+    def select_target(self) -> bool:
         """ Selects the furthest target down the road within range and returns
         True if an enemy has been selected. """
 
@@ -25,6 +26,7 @@ class TargetmodeFurthest(Targetmode):
            self.tower.target[0].get_projected_damage() > 0 and 
            self.tower.distance_to_target(self.tower.target[0]) <= 
            self.tower.range):
+
             return True
         
         target = []

@@ -1,5 +1,4 @@
 import pygame
-from enemies.enemy import Enemy
 from ui.tooltip import ToolTip
 from towers.tower import Tower
 

@@ -1,4 +1,5 @@
 import pygame
+from typing import Any
 from ui.button import Button
 from ui.text import Text
 from pygame.math import Vector2
@@ -11,7 +12,7 @@ class Menu():
         # TODO Make classes for text and images
         self.buttons: list[Button] = []
         self.text: list[Text] = []
-        self.images = [] 
+        self.images: list[Any] = [] 
         
     def draw(self, window: pygame.surface.Surface) -> None:
         

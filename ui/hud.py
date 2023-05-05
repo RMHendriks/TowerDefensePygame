@@ -5,13 +5,17 @@ if TYPE_CHECKING:
     from level import Level
 
 import pygame
+from typing import TypeVar, Optional
 from player import Player
 from enemyspawnmanager import EnemySpawnManager
 from cells.cell import Cell
 from towers.tower import Tower
+from enemies.enemy import Enemy
 from ui.tooltip import ToolTip
 from ui.tooltiptower import ToolTipTower
 from ui.tooltipenemy import ToolTipEnemy
+
+EntityType = TypeVar("EntityType", Enemy, Tower)
 
 class HUD():
     
@@ -33,7 +37,7 @@ class HUD():
         self.image = pygame.image.load('sprites/tower1.png').convert_alpha()
         self.image2 = pygame.image.load('sprites/tower2.png').convert_alpha()
 
-        self.tooltip = None
+        self.tooltip: Optional[ToolTip] = None
     
     def render_hud(self, window: pygame.surface.Surface) -> None:
         """ Render the hud at the bottom of the screen. """
@@ -64,14 +68,6 @@ class HUD():
             self.tooltip = None
         elif isinstance(self.tooltip, ToolTip):
             self.tooltip.draw(window)
-
-    def draw_tooltip(self, window: pygame.surface.Surface, subject: object) -> None:
-        """ Draw a tooltip on the screen when the player hovers over a tower. """
-        
-        pygame.draw.rect(window, pygame.Color("black"), [subject.position.x, subject.position.y, 200, 100])
-        
-        object_text = self.font_tooltip.render(f"{subject}", True, pygame.Color("white"))
-        window.blit(object_text, [subject.position.x, subject.position.y])
 
     def create_tower_tooltip(self, cell: Cell) -> None:
         """ Checks if a tower has been clicked and creates a tower tooltip. """

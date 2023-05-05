@@ -1,6 +1,7 @@
 import pygame
 from towers.tower import Tower
 from enemies.enemy import Enemy
+from projectiles.projectile import Projectile
 from projectiles.projectilebeam import ProjectileBeam
 from towers.targetmodes.targetmodeclosest import TargetmodeClosest
 
@@ -16,7 +17,7 @@ class TowerTesla(Tower):
         self.range = size * 5
         self.tower_cost = 75
         self.beam_active = False
-        self.projectile_list: list[ProjectileBeam] = []
+        self.projectile_list: list[Projectile] = []
         
         self.damage = 0.1
         self.speed = 2.0

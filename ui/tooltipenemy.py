@@ -4,10 +4,10 @@ from ui.tooltip import ToolTip
 
 
 class ToolTipEnemy(ToolTip):
-    
+
     def __init__(self, entity: Enemy, cell_size: int) -> None:
         super().__init__(entity, cell_size)
-        
+
     def draw(self, window: pygame.surface.Surface) -> None:
         super().draw(window)
 

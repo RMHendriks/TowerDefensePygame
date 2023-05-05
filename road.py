@@ -24,10 +24,11 @@ class Road():
         low_y = 2
         high_y = len(grid) - 3
 
-        grid[x][y] = CellRoad(grid[x][y].position.x, grid[x][y].position.y,
-                              cell_size)
-        self.road_list_cord: list[Vector2] = [grid[x][y].get_center_coord()]
-        self.road_list_object = [grid[x][y]]
+        road_cell = CellRoad(grid[x][y].position.x, grid[x][y].position.y,
+                             cell_size)
+        self.road_list_cord = [road_cell.get_center_coord()]
+        self.road_list_object = [road_cell]
+        grid[x][y] = road_cell
 
         while x < len(grid[0]) - 1:
 
@@ -36,10 +37,11 @@ class Road():
                     if isinstance(grid[x + 1][y], CellRoad):
                         continue
                     x += 1
-                    grid[x][y] = CellRoad(grid[x][y].position.x,
-                                          grid[x][y].position.y, cell_size)
-                    self.road_list_cord.append(grid[x][y].get_center_coord())
-                    self.road_list_object.append(grid[x][y])
+                    road_cell = CellRoad(grid[x][y].position.x,
+                                         grid[x][y].position.y, cell_size)
+                    self.road_list_cord.append(road_cell.get_center_coord())
+                    self.road_list_object.append(road_cell)
+                    grid[x][y] = road_cell
                 case 1:
                     if y > high_y:
                         continue
@@ -47,10 +49,11 @@ class Road():
                     isinstance(grid[x - 1][y + 1], CellRoad)):
                         continue
                     y += 1
-                    grid[x][y] = CellRoad(grid[x][y].position.x, 
-                                          grid[x][y].position.y, cell_size)
-                    self.road_list_cord.append(grid[x][y].get_center_coord())
-                    self.road_list_object.append(grid[x][y])
+                    road_cell = CellRoad(grid[x][y].position.x,
+                                         grid[x][y].position.y, cell_size)
+                    self.road_list_cord.append(road_cell.get_center_coord())
+                    self.road_list_object.append(road_cell)
+                    grid[x][y] = road_cell
                 case 2:
                     if y < low_y:
                         continue
@@ -58,10 +61,11 @@ class Road():
                     isinstance(grid[x - 1][y - 1], CellRoad)):
                         continue
                     y -= 1
-                    grid[x][y] = CellRoad(grid[x][y].position.x, 
-                                          grid[x][y].position.y, cell_size)
-                    self.road_list_cord.append(grid[x][y].get_center_coord())
-                    self.road_list_object.append(grid[x][y])
+                    road_cell = CellRoad(grid[x][y].position.x,
+                                         grid[x][y].position.y, cell_size)
+                    self.road_list_cord.append(road_cell.get_center_coord())
+                    self.road_list_object.append(road_cell)
+                    grid[x][y] = road_cell
 
         for cell in self.road_list_object:
             cell.load_sprite(self.road_list_object)

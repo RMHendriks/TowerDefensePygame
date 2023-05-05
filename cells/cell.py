@@ -15,7 +15,7 @@ class Cell():
         """ Draw the cell to the screen. """
 
         pygame.draw.rect(window, self.color,
-                         [self.position.x, self.position.y,
+                         [int(self.position.x), int(self.position.y),
                           self.size - 1, self.size - 1])
 
     def get_center_coord(self) -> Vector2:

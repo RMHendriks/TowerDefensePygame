@@ -4,10 +4,10 @@ class Player():
     def __init__(self) -> None:
 
         self.score = 0
-        self.gold = 1200
+        self.gold = 1200.0
         self.lives = 3
 
-    def increment_score(self, increment) -> None:
+    def increment_score(self, increment: int) -> None:
 
         self.score += increment
 
@@ -15,7 +15,7 @@ class Player():
 
         return self.score
 
-    def increment_gold(self, increment: int) -> None:
+    def increment_gold(self, increment: float) -> None:
         """ Increases the amount of gold by the passed int argument. """
 
         self.gold += increment
@@ -31,7 +31,7 @@ class Player():
         
         return False
 
-    def get_gold(self) -> int:
+    def get_gold(self) -> float:
         """ Get the amount of gold the player currently has. """
 
         return self.gold

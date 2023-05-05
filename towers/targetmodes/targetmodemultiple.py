@@ -2,13 +2,14 @@ from towers.targetmodes.targetmode import Targetmode
 from enemies.enemy import Enemy
 from towers.tower import Tower
 
+
 class TargetmodeMultiple(Targetmode):
     """ Class that decides what target to select. """
     
     def __init__(self, tower: Tower) -> None:
         super().__init__(tower)
                 
-    def select_target(self, total_targets=3) -> list[Enemy]:
+    def select_target(self, total_targets=3) -> bool:
         """ Selects a certain amount of enemies within range and returns
         True if an enemy has been selected. """
 

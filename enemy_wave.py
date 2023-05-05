@@ -1,6 +1,6 @@
 import pygame
 import random
-from typing import Optional
+from typing import Optional, Type
 from pygame.math import Vector2
 from enemies.enemy import Enemy
 from enemies.enemynormal import EnemyNormal
@@ -22,10 +22,10 @@ class EnemyWave():
         self.start_wave_value = start_wave_value
         self.wave_level = wave_level
         self.wave_value = self.calculate_wave_value()
-        self.enemy_dict: dict[int ,dict[int, Enemy]] = {1: {5: EnemyNormal},
-                                                        2: {5: EnemyNormal, 2: EnemyFast},
-                                                        3: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow},
-                                                        4: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow, 8: EnemyPriest}}
+        self.enemy_dict: dict[int ,dict[int, Type[Enemy]]] = {1: {5: EnemyNormal},
+                                                              2: {5: EnemyNormal, 2: EnemyFast},
+                                                              3: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow},
+                                                              4: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow, 8: EnemyPriest}}
         self.enemy_list: list[Enemy] = self.initialize_wave()
         
         # cooldown timers

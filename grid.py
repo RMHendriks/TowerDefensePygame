@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Union
 from cells.cell import Cell
+from cells.cellroad import CellRoad
 
 
 class Grid():
@@ -14,9 +15,9 @@ class Grid():
         self.screen_height = screen_height
 
         # initializes the grid and saves it in self.grid
-        self.grid: list[list[Cell]] = self.initialize_grid()
+        self.grid: list[list[Union[Cell, CellRoad]]] = self.initialize_grid()
 
-    def initialize_grid(self) -> None:
+    def initialize_grid(self) -> list[list[Cell]]:
         """ Creates the grid for the level. """
 
         grid: list[list[Cell]] = []

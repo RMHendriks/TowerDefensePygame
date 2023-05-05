@@ -14,7 +14,7 @@ class EnemyPriest(Enemy):
         # Enemy attributes
         self.speed = 1
         self.health = 20
-        self.radius = cell_size // 2.5
+        self.radius = int(cell_size // 2.5)
         self.color = pygame.Color("darkgoldenrod")
         self.projected_health = self.health
         self.max_health = self.health

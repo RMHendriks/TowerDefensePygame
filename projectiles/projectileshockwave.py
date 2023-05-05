@@ -13,7 +13,7 @@ from projectiles.projectile import Projectile
 class ProjectileShockwave(Projectile):
     """ Class for projectile behaviour """
 
-    def __init__(self, tower: Tower, position: Vector2, size: int,target: Enemy,
+    def __init__(self, tower: Tower, position: Vector2, size: int, target: Enemy,
                  damage: int, speed: float, max_speed: float) -> None:
         super().__init__(tower, position, size, target, damage, speed, max_speed)
 
@@ -25,6 +25,8 @@ class ProjectileShockwave(Projectile):
         # enemy list for collision checks
         self.enemy_list: list[Enemy] = tower.enemy_list
         self.enemy_hit_list: list[Enemy] = []
+        
+        self.target = target
 
 
     def draw(self, window) -> None:
@@ -40,22 +42,22 @@ class ProjectileShockwave(Projectile):
 
         self.radius += (self.speed * game_speed)
         
-    def deal_damage(self, enemy: Enemy) -> None:
+    def deal_damage(self) -> None:
         """ Deal damage to the enemy target. """
 
-        enemy.receive_damage(self.damage)
+        self.target.receive_damage(self.damage)
 
-    def deal_projected_damage(self, enemy: Enemy) -> None:
+    def deal_projected_damage(self) -> None:
         """ Deal projected damage to the enemy target. """
 
-        enemy.receive_projected_damage(self.damage)
+        self.target.receive_projected_damage(self.damage)
         
     def check_collision(self) -> bool:
         """ Checks if the projectile has hit a target and
         deals damage to all the targets it collides with. """
 
         total_enemies_hit = len(self.enemy_hit_list)
-        
+
         for enemy in self.enemy_list:
             delta = enemy.position - self.position
             magnitude = delta.magnitude()
@@ -64,9 +66,11 @@ class ProjectileShockwave(Projectile):
                magnitude > self.radius - enemy.get_radius() / 2 and
                enemy not in self.enemy_hit_list):
 
-                self.deal_damage(enemy)
-                self.deal_projected_damage(enemy)
-                self.enemy_hit_list.append(enemy)
+                self.target = enemy
+
+                self.deal_damage()
+                self.deal_projected_damage()
+                self.enemy_hit_list.append(self.target)
 
         if len(self.enemy_hit_list) > total_enemies_hit:
             return True

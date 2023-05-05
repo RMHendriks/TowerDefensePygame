@@ -2,6 +2,7 @@ from towers.targetmodes.targetmode import Targetmode
 from enemies.enemy import Enemy
 from towers.tower import Tower
 
+
 class TargetmodeAny(Targetmode):
     """ Class that decides what target to select.
     Selects all targets within range. """
@@ -9,7 +10,7 @@ class TargetmodeAny(Targetmode):
     def __init__(self, tower: Tower) -> None:
         super().__init__(tower)
                 
-    def select_target(self) -> list[Enemy]:
+    def select_target(self) -> bool:
         """ Selects all targets within range and returns
         True if any enemy has been selected. """
 

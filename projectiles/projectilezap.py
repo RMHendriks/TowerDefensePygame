@@ -52,9 +52,9 @@ class ProjectileZap(Projectile):
 
         if self.check_collision():
             self.enemy_hit_list.append(self.target)
-            
+
             shortest_distance = self.projectile_range
-            
+    
             for enemy in self.enemy_list:
                 magnitude = (enemy.position - self.position).magnitude()
                 if (magnitude < self.projectile_range and
@@ -65,3 +65,5 @@ class ProjectileZap(Projectile):
                     self.target = enemy
                     
             return True if shortest_distance == self.projectile_range else False
+
+        return False
