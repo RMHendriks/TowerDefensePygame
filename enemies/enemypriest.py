@@ -9,6 +9,8 @@ class EnemyPriest(Enemy):
     def __init__(self, road: list[Vector2], cell_size: int) -> None:
         super().__init__(road, cell_size)
 
+        self.name = "Enemy Priest"
+
         # Enemy attributes
         self.speed = 1
         self.health = 20

@@ -16,54 +16,65 @@ from towers.towershockwave import TowerShockwave
 from towers.towerzap import TowerZap
 from towers.towersniper import TowerSniper
 from ui.tooltiptower import ToolTipTower
+from ui.tooltipenemy import ToolTipEnemy
+
 
 class UserInputHandlerPC(UserInputHandler):
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, level: Level) -> None:
+        super().__init__(level)
 
-    def event_handler(self, level: Level) -> None:
+    def event_handler(self) -> None:
         """ Method that handles events. No return value. """
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.level.game_running = False
+                return
 
-            mouse_position = pygame.mouse.get_pos()
+            self.mouse_position = pygame.mouse.get_pos()
 
-            cell: Cell = level.grid.get_cell(mouse_position[0], 
-                                             mouse_position[1])
+            cell: Cell = self.level.grid.get_cell(self.mouse_position[0], 
+                                             self.mouse_position[1])
 
             if cell is not None:
-                level.cell = cell
+                self.level.cell = cell
 
-                if isinstance(cell, Tower):
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        if event.button == 1:
-                            level.tool_tip = ToolTipTower(cell, level.cell_size)
-                elif level.tool_tip is not None:
-                    level.tool_tip.hidden = True
+            if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and
+               self.level.hud.tooltip is None):
+                self.level.hud.create_tower_tooltip(cell)
+                self.level.hud.create_enemy_tooltip(self.mouse_position)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self.level.hud.tooltip = None
 
-            if (level.cell.interacted(mouse_position)):
+            if (self.level.cell.interacted(self.mouse_position)):
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        level.tower_manager.buy_tower(cell, TowerLight,
-                                                      mouse_position)
+                        self.level.tower_manager.buy_tower(self.level.cell,
+                                                           TowerLight,
+                                                           self.mouse_position)
                     elif event.button == 2:
-                        level.tower_manager.buy_tower(cell, TowerIce,
-                                                      mouse_position)
+                        self.level.tower_manager.buy_tower(self.level.cell,
+                                                           TowerIce,
+                                                           self.mouse_position)
                     elif event.button == 3:
-                        level.tower_manager.buy_tower(cell, TowerTesla,
-                                                      mouse_position)
+                        self.level.tower_manager.buy_tower(self.level.cell,
+                                                           TowerTesla,
+                                                           self.mouse_position)
                     elif event.button == 6:
-                        level.tower_manager.buy_tower(cell, TowerZap,
-                                                      mouse_position)
+                        self.level.tower_manager.buy_tower(self.level.cell,
+                                                           TowerZap,
+                                                           self.mouse_position)
                     elif event.button == 7:
-                        level.tower_manager.buy_tower(cell, TowerShockwave,
-                                                      mouse_position)
+                        self.level.tower_manager.buy_tower(self.level.cell,
+                                                           TowerShockwave,
+                                                           self.mouse_position)
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_1:
-                        level.tower_manager.buy_tower(cell, TowerSniper,
-                                                      mouse_position)
+                        self.level.tower_manager.buy_tower(self.level.cell,
+                                                           TowerSniper,
+                                                           self.mouse_position)

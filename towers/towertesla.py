@@ -18,7 +18,7 @@ class TowerTesla(Tower):
         self.beam_active = False
         self.projectile_list: list[ProjectileBeam] = []
         
-        self.damage = 0.05
+        self.damage = 0.1
         self.speed = 2.0
         self.max_speed = 2.5
         
@@ -55,7 +55,6 @@ class TowerTesla(Tower):
                                                   self.size, self.target[x],
                                                   self.damage, self.speed,
                                                   self.max_speed)
-                projectile.deal_projected_damage()
                 projectiles.append(projectile)
                 self.beam_active = True
 

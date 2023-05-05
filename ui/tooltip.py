@@ -26,11 +26,8 @@ class ToolTip():
         """ Draws the base of the tooltip. """
 
         if not self.hidden:
-
-            self.pos_x = self.entity.position.x + self.cell_size * 1.25
-            self.pos_y = self.entity.position.y + self.cell_size * 1.25
-            self.width = window.get_width() // 3
-            self.height = window.get_width() // 5
+            
+            self.determine_position(window)
 
             pygame.draw.rect(window, self.backgroud_color,
                              [self.pos_x, self.pos_y, self.width, self.height])
@@ -38,3 +35,18 @@ class ToolTip():
             pygame.draw.rect(window, self.border_color,
                              [self.pos_x, self.pos_y, self.width, self.height],
                              self.border_width)
+
+    def determine_position(self, window: pygame.surface.Surface) -> None:
+        """ Method that decides on the position of the tooltip frame to make
+        sure it doesn't overlap with the edges of the screen. """
+        
+        self.pos_x = self.entity.position.x + self.cell_size * 1.25
+        self.pos_y = self.entity.position.y + self.cell_size * 1.25
+        self.width = window.get_width() // 3
+        self.height = window.get_width() // 5
+        
+        if self.pos_x + self.width > window.get_width():
+            self.pos_x = window.get_width() - self.width
+            
+        if self.pos_y + self.height > window.get_height():
+            self.pos_y = window.get_height() - self.height

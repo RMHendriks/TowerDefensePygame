@@ -6,6 +6,8 @@ class Enemy():
 
     def __init__(self, road: list[Vector2], cell_size: int) -> None:
 
+        self.name = "Enemy" 
+
         self.road = road
         self.position = Vector2(road[0].x - (cell_size / 2), road[0].y)
         self.waypoint: int = 0
@@ -74,6 +76,17 @@ class Enemy():
         reached the last waypoint. """
         
         return self.moving
+    
+    def check_if_clicked(self, mouse_position: tuple[int, int]) -> bool:
+        """ Method that returns True if the enemy has been clicked. """
+
+        mouse_vector = Vector2(mouse_position)
+        delta = self.position - mouse_vector
+        
+        if delta.length() < self.radius:
+            return True
+        
+        return False
 
     def get_radius(self) -> float:
         """ Method that returns the radius of the enemy as a float. """
@@ -159,4 +172,4 @@ class Enemy():
         return True
 
     def __str__(self) -> str:
-        return f"Type: \nHealth: {self.health}\nSpeed: {self.speed}"
+        return self.name

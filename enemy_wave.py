@@ -73,7 +73,6 @@ class EnemyWave():
             self.cooldown_timer = pygame.time.get_ticks()
             self.spawn_cooldown = random.randrange((self.calculate_spawn_timer() // 5),
                                                    self.calculate_spawn_timer())
-            print(self.spawn_cooldown)
             return True
 
         return False

@@ -13,6 +13,8 @@ class Game():
     
     def __init__(self, screen_width: int, screen_height: int, speed: float) -> None:
         
+        pygame.display.set_caption("Polygon Fortress")
+        
         self.game_running = True
         self.screen_width = screen_width
         self.screen_height = screen_height

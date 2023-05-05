@@ -18,7 +18,8 @@ from ui.hud import HUD
 class Level():
     """ Class that initalizes and holds all level data. """
 
-    def __init__(self, screen_width: int, screen_height: int, cell_size: int, speed: float, num_waves: int) -> None:
+    def __init__(self, screen_width: int, screen_height: int, cell_size: int,
+                 speed: float, num_waves: int) -> None:
 
         self.game_running = True
         self.screen_width = screen_width
@@ -28,10 +29,9 @@ class Level():
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont('agencyfb', 25)
         self.cell = Cell(0, 0, cell_size)
-        self.tool_tip = None
 
         # initialise user input controls
-        self.user_input_handler: UserInputHandler = UserInputHandlerPC()
+        self.user_input_handler: UserInputHandler = UserInputHandlerPC(self)
 
         # initialise the player
         self.player = Player()
@@ -62,7 +62,7 @@ class Level():
         
         # initialize HUD
         self.hud = HUD(self.screen_width, self.screen_height, self.player,
-                       self.enemy_spawn_manager)
+                       self.enemy_spawn_manager, self.cell_size, self)
 
     def run(self, window: pygame.surface.Surface) -> None:
         """ Method that runs the game loop of the level.
@@ -77,7 +77,7 @@ class Level():
             window.fill(pygame.Color("black"))
 
             # check for events
-            self.user_input_handler.event_handler(self)
+            self.user_input_handler.event_handler()
 
             self.update()
             self.draw(window)
@@ -118,15 +118,8 @@ class Level():
                 if isinstance(projectile, Projectile):
                     projectile.draw(window)
 
-        # draws range circles
-        if isinstance(self.cell, Tower):
-                self.cell.hover_draw(window)
-
         # draws the hud
         self.hud.render_hud(window)
-        
-        if self.tool_tip is not None:
-            self.tool_tip.draw(window)
 
     def shoot_tower_projectiles(self) -> None:
         """ Makes towers shoot a projectile if possible. """

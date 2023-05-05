@@ -27,7 +27,9 @@ class ProjectileBeam(Projectile):
         self.cooldown_timer = pygame.time.get_ticks() - self.damage_tick_timer
 
         # projectile attributes
-        self.max_damage = 2
+        self.max_damage = 30
+        self.damage_incrementer = 1.18
+        self.no_game_speed_damage = self.damage
 
     def draw(self, window) -> None:
         """ Draws the projectile to the screen. """
@@ -47,9 +49,12 @@ class ProjectileBeam(Projectile):
               self.damage_tick_timer):
 
             self.cooldown_timer = pygame.time.get_ticks()
-            self.damage *= 1.1 ** 1.11
-            if self.damage > self.max_damage:
-                self.damage = self.max_damage
+            self.no_game_speed_damage *= self.damage_incrementer
+
+            if self.no_game_speed_damage > self.max_damage:
+                self.no_game_speed_damage = self.max_damage
+
+            self.damage = self.no_game_speed_damage * game_speed
 
             self.deal_projected_damage()
             self.deal_damage()
