@@ -23,6 +23,7 @@ class ToolTip():
 
         self.border_color = entity.color
         self.border_width = 2
+        self.border_radius = 10
 
         self.hidden = False
 
@@ -35,12 +36,13 @@ class ToolTip():
 
             pygame.draw.rect(window, self.backgroud_color,
                              [int(self.pos_x), int(self.pos_y),
-                             self.width, self.height])
+                             self.width, self.height],
+                             border_radius=self.border_radius)
 
             pygame.draw.rect(window, self.border_color,
                              [int(self.pos_x), int(self.pos_y),
                              self.width, self.height],
-                             self.border_width)
+                             self.border_width, self.border_radius)
 
     def determine_position(self, window: pygame.surface.Surface) -> None:
         """ Method that decides on the position of the tooltip frame to make

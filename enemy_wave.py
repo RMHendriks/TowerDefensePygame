@@ -7,27 +7,36 @@ from enemies.enemynormal import EnemyNormal
 from enemies.enemyfast import EnemyFast
 from enemies.enemyslow import EnemySlow
 from enemies.enemypriest import EnemyPriest
+from enemies.enemydisabler import EnemyDisabler
+from towers.tower import Tower
 
 
 
 class EnemyWave():
     """ Class that generates a group of enemies. """
 
-    def __init__(self, road_list: list[Vector2], wave_level: int, cell_size: int, start_wave_value=10) -> None:
+    def __init__(self, towers: list[Tower], road_list: list[Vector2],
+                 wave_level: int, cell_size: int, start_wave_value=10) -> None:
 
         self.cell_size = cell_size
         self.road_list = road_list
+        self.tower_list= towers
 
         # initialises wave arguments
         self.start_wave_value = start_wave_value
         self.wave_level = wave_level
         self.wave_value = self.calculate_wave_value()
-        self.enemy_dict: dict[int ,dict[int, Type[Enemy]]] = {1: {5: EnemyNormal},
-                                                              2: {5: EnemyNormal, 2: EnemyFast},
-                                                              3: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow},
-                                                              4: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow, 8: EnemyPriest}}
+        self.enemy_dict: dict[int ,dict[int, Type[Enemy]]] = (
+                        {1: {5: EnemyNormal},
+                         2: {5: EnemyNormal, 2: EnemyFast},
+                         3: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow},
+                         4: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow,
+                             8: EnemyPriest},
+                         5: {5: EnemyNormal, 2: EnemyFast, 8: EnemySlow,
+                             8: EnemyPriest, 9: EnemyDisabler}})
+
         self.enemy_list: list[Enemy] = self.initialize_wave()
-        
+
         # cooldown timers
         self.cooldown_timer = pygame.time.get_ticks()
         self.spawn_cooldown = 5000
@@ -36,7 +45,9 @@ class EnemyWave():
     def initialize_wave(self) -> list[Enemy]:
         """ Initialize a wave of enemies of a random size. """
 
-        wave_enemy_dict = self.enemy_dict[self.wave_level if self.wave_level < 4 else 4]
+        wave_enemy_dict = self.enemy_dict[self.wave_level if self.wave_level <
+                                          len(self.enemy_dict) else
+                                          len(self.enemy_dict)]
         wave_value = 20
         lowest_value = min(wave_enemy_dict.keys())
         enemy_list: list[Enemy] = []
@@ -46,7 +57,13 @@ class EnemyWave():
             index = random.choice(list(wave_enemy_dict))
             if wave_value >= lowest_value:
                 wave_value -= index
-                enemy_list.append(wave_enemy_dict[index](self.road_list, self.cell_size))
+                if wave_enemy_dict[index] == EnemyDisabler:
+                    enemy_list.append(wave_enemy_dict[index](self.road_list,
+                                                             self.cell_size,
+                                                             self.tower_list))
+                else:
+                    enemy_list.append(wave_enemy_dict[index](self.road_list,
+                                                             self.cell_size))
 
         return enemy_list
 

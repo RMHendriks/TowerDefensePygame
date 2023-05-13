@@ -31,6 +31,17 @@ class TowerTesla(Tower):
     def ready_to_fire(self) -> bool:
         """ Checks if the tower has a beam and returns True or False. """
 
+        if self.disabled:
+            if (pygame.time.get_ticks() - self.disable_start_time >
+                self.disable_timer):
+
+                self.disabled = False
+                self.disable_timer = 0
+            else:
+                self.beam_active = False
+                self.projectile_list = []
+                return False
+
         if len(self.projectile_list) > 0:
             if self.projectile_list[0].check_if_projectile_ended():
                 self.beam_active = False

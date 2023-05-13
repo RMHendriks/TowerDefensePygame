@@ -29,14 +29,29 @@ class Tower(Cell):
         self.enemy_list = enemy_list
         self.target: list[Enemy] = []
         self.target_mode: Targetmode
+        
+        self.disabled = False
+        self.disabled_color = self.color.a = 100
+        self.disable_timer = 0
 
     def draw(self, window) -> None:
         """ Draws the tower to the screen. """
-        super().draw(window)
 
-        pygame.draw.circle(window, self.inner_color,
-                           self.get_center_coord(),
-                           self.size / 4)
+        if self.disabled:
+            color = self.color.a = 200
+            pygame.draw.rect(window, color,
+                            [int(self.position.x), int(self.position.y),
+                            self.size - 1, self.size - 1])
+            pygame.draw.circle(window, self.disabled_color,
+                            self.get_center_coord(),
+                            self.size / 4)
+        else:
+            pygame.draw.rect(window, self.color,
+                            [int(self.position.x), int(self.position.y),
+                            self.size - 1, self.size - 1])
+            pygame.draw.circle(window, self.inner_color,
+                            self.get_center_coord(),
+                            self.size / 4)
     
     def hover_draw(self, window) -> None:
         """ Draws a circle around the tower to display the range. """
@@ -61,10 +76,34 @@ class Tower(Cell):
     def ready_to_fire(self) -> bool:
         """ Checks if the tower is on cooldown and returns True or False. """
 
+        if self.disabled:
+            if (pygame.time.get_ticks() - self.disable_start_time >
+                self.disable_timer):
+
+                self.disabled = False
+                self.disable_timer = 0
+            else:
+                return False
+
         if ((pygame.time.get_ticks() - self.cooldown_timer >
            self.shooting_cooldown and self.select_target())
            and len(self.target) > 0):
+
             self.cooldown_timer = pygame.time.get_ticks()
+
+            return True
+
+        return False
+
+    def disable(self, disable_time_ms: int) -> bool:
+        """ Disable the tower for the argument in ms. Returns True if the tower
+        was succesfully disabled, else return False. """
+
+        if not self.disabled:
+            self.disabled = True
+            self.disable_start_time = pygame.time.get_ticks()
+            self.disable_timer = disable_time_ms
+
             return True
 
         return False

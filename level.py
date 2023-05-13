@@ -44,16 +44,17 @@ class Level():
         self.road_list: List[Vector2] = self.road.draw_path(self.grid.grid,
                                                             self.cell_size)
 
+        # initialise list for towers
+        self.tower_list: List[Tower] = []
+        
         # initialise enemies
         # TODO improve the wave system
         self.enemy_list: List[Enemy] = []
-        self.enemy_spawn_manager = EnemySpawnManager(self.cell_size,
+        self.enemy_spawn_manager = EnemySpawnManager(self.tower_list,
+                                                     self.cell_size,
                                                      self.road_list,
                                                      self.enemy_list,
                                                      num_waves)
-
-        # initialise list for towers
-        self.tower_list: List[Tower] = []
 
         # initialise the tower manager
         self.tower_manager = TowerManager(self.cell_size, self.grid,
